@@ -3,7 +3,6 @@ import {
   selectTemplate,
   generateTargetFromTemplate,
   generateRandomTarget,
-  generateDepthHint,
   getTargetCategory,
   computeStats,
 } from '../logic'
@@ -63,8 +62,6 @@ describe('generateTargetFromTemplate', () => {
     distanceMax: 200,
     depthOk: 15,
     widthOk: 20,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 10,
   }
 
@@ -96,64 +93,6 @@ describe('generateTargetFromTemplate', () => {
       expect(target.distance).toBeLessThanOrEqual(250)
     }
   })
-
-  it('depthHintが生成される', () => {
-    const target = generateTargetFromTemplate(template)
-    expect([null, 'short', 'long']).toContain(target.depthHint)
-  })
-})
-
-describe('generateDepthHint', () => {
-  it('shortSideHintChance=0, longSideHintChance=0の場合はnullを返す', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      shortSideHintChance: 0,
-      longSideHintChance: 0,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      expect(generateDepthHint(template)).toBeNull()
-    }
-  })
-
-  it('shortSideHintChance=1の場合は必ずshortを返す', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      shortSideHintChance: 1,
-      longSideHintChance: 0,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      expect(generateDepthHint(template)).toBe('short')
-    }
-  })
-
-  it('shortSideHintChance=0, longSideHintChance=1の場合は必ずlongを返す', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      shortSideHintChance: 0,
-      longSideHintChance: 1,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      expect(generateDepthHint(template)).toBe('long')
-    }
-  })
 })
 
 describe('generateRandomTarget', () => {
@@ -165,7 +104,6 @@ describe('generateRandomTarget', () => {
     expect(target.distance).toBeGreaterThan(0)
     expect(target.depthOk).toBeGreaterThan(0)
     expect(target.widthOk).toBeGreaterThan(0)
-    expect([null, 'short', 'long']).toContain(target.depthHint)
   })
 
   it('距離が250yを超えない', () => {
@@ -216,13 +154,7 @@ describe('targetTemplates', () => {
   })
 
   it('ヒント確率が0-1の範囲内で合計が1以下', () => {
-    for (const template of targetTemplates) {
-      expect(template.shortSideHintChance).toBeGreaterThanOrEqual(0)
-      expect(template.shortSideHintChance).toBeLessThanOrEqual(1)
-      expect(template.longSideHintChance).toBeGreaterThanOrEqual(0)
-      expect(template.longSideHintChance).toBeLessThanOrEqual(1)
-      expect(template.shortSideHintChance + template.longSideHintChance).toBeLessThanOrEqual(1)
-    }
+    // ヒント機能削除済み - テスト不要
   })
 
   it('アプローチショットのテンプレートが存在する', () => {
@@ -247,8 +179,6 @@ describe('generateTargetFromTemplate with maxDistance', () => {
     distanceMax: 250,
     depthOk: 30,
     widthOk: 30,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 10,
   }
 
@@ -384,8 +314,6 @@ describe('generateTargetFromTemplate with strictness', () => {
     distanceMax: 200,
     depthOk: 20,
     widthOk: 20,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 10,
   }
 

@@ -95,17 +95,6 @@ function App() {
                 <span className="zone-value">±{target.widthOk / 2}yd</span>
               </div>
             </div>
-
-            {target.depthHint && (
-              <div className="depth-hint" data-testid="depth-hint">
-                <span className="depth-hint-icon">💡</span>
-                <span className="depth-hint-text">
-                  {target.depthHint === 'short'
-                    ? '手前から攻める（奥は危険）'
-                    : '奥でもOK（手前に罠あり）'}
-                </span>
-              </div>
-            )}
           </div>
         )}
 

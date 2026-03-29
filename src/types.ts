@@ -1,6 +1,3 @@
-/** 前後の攻め方ヒント */
-export type DepthHint = 'short' | 'long' | null
-
 /** ターゲットの定義 */
 export interface Target {
   /** ターゲット名（例：ドライバー ティーショット） */
@@ -11,8 +8,6 @@ export interface Target {
   depthOk: number
   /** OKな横幅（ヤード） - 左右の許容範囲 */
   widthOk: number
-  /** 前後の攻め方ヒント（アイアン・アプローチ向け） */
-  depthHint: DepthHint
 }
 
 /** ターゲットテンプレートの定義（距離範囲を持つ） */
@@ -27,10 +22,6 @@ export interface TargetTemplate {
   depthOk: number
   /** OKな横幅（ヤード） */
   widthOk: number
-  /** 「手前から攻める」ヒントの発生確率 (0-1) */
-  shortSideHintChance: number
-  /** 「奥でもOK」ヒントの発生確率 (0-1) */
-  longSideHintChance: number
   /** 出現重み（全テンプレートの重みの合計に対する比率で出現頻度が決まる） */
   weight: number
 }

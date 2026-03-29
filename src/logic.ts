@@ -1,4 +1,4 @@
-import type { DepthHint, Target, TargetTemplate, TargetCategory, ShotResult, SessionStats } from './types'
+import type { Target, TargetTemplate, TargetCategory, ShotResult, SessionStats } from './types'
 import { DEFAULT_MAX_DISTANCE, STRICTNESS_MULTIPLIERS } from './types'
 import type { StrictnessLevel } from './types'
 import { targetTemplates } from './targets'
@@ -26,20 +26,6 @@ export function selectTemplate(
   }
   // フォールバック（浮動小数点の丸め誤差対策）
   return templates[templates.length - 1]
-}
-
-/**
- * テンプレートの確率に基づいて前後の攻め方ヒントを生成する
- */
-export function generateDepthHint(template: TargetTemplate): DepthHint {
-  const rand = Math.random()
-  if (rand < template.shortSideHintChance) {
-    return 'short'
-  }
-  if (rand < template.shortSideHintChance + template.longSideHintChance) {
-    return 'long'
-  }
-  return null
 }
 
 /**
@@ -73,7 +59,6 @@ export function generateTargetFromTemplate(
     distance,
     depthOk: Math.max(1, Math.round(template.depthOk * strictnessMultiplier)),
     widthOk: Math.max(1, Math.round(template.widthOk * strictnessMultiplier)),
-    depthHint: generateDepthHint(template),
   }
 }
 

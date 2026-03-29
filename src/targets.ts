@@ -29,8 +29,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 250,
     depthOk: 30,
     widthOk: 30,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 14,
   },
   {
@@ -39,8 +37,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 220,
     depthOk: 25,
     widthOk: 25,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 6,
   },
   {
@@ -49,8 +45,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 200,
     depthOk: 15,
     widthOk: 20,
-    shortSideHintChance: 0.4,
-    longSideHintChance: 0.2,
     weight: 3,
   },
   {
@@ -59,8 +53,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 170,
     depthOk: 12,
     widthOk: 18,
-    shortSideHintChance: 0.4,
-    longSideHintChance: 0.2,
     weight: 3,
   },
   {
@@ -69,8 +61,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 140,
     depthOk: 10,
     widthOk: 15,
-    shortSideHintChance: 0.5,
-    longSideHintChance: 0.2,
     weight: 3,
   },
   {
@@ -79,8 +69,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 200,
     depthOk: 20,
     widthOk: 20,
-    shortSideHintChance: 0.3,
-    longSideHintChance: 0.2,
     weight: 9,
   },
   {
@@ -89,8 +77,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 150,
     depthOk: 14,
     widthOk: 14,
-    shortSideHintChance: 0.4,
-    longSideHintChance: 0.2,
     weight: 14,
   },
   {
@@ -99,8 +85,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 100,
     depthOk: 10,
     widthOk: 10,
-    shortSideHintChance: 0.5,
-    longSideHintChance: 0.2,
     weight: 11,
   },
   {
@@ -109,8 +93,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 140,
     depthOk: 12,
     widthOk: 12,
-    shortSideHintChance: 0.4,
-    longSideHintChance: 0.2,
     weight: 4,
   },
   {
@@ -119,8 +101,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 180,
     depthOk: 20,
     widthOk: 25,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 4,
   },
   {
@@ -129,8 +109,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 60,
     depthOk: 5,
     widthOk: 8,
-    shortSideHintChance: 0.5,
-    longSideHintChance: 0.15,
     weight: 11,
   },
   {
@@ -139,8 +117,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 30,
     depthOk: 3,
     widthOk: 5,
-    shortSideHintChance: 0.5,
-    longSideHintChance: 0.1,
     weight: 11,
   },
   {
@@ -149,8 +125,6 @@ export const targetTemplates: TargetTemplate[] = [
     distanceMax: 20,
     depthOk: 3,
     widthOk: 5,
-    shortSideHintChance: 0.4,
-    longSideHintChance: 0.1,
     weight: 7,
   },
 ]
