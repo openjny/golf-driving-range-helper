@@ -108,16 +108,17 @@
 }
 
 .target-name {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--green-dark);
-  margin-bottom: 2px;
+  margin: 0;
   font-weight: 600;
 }
 
 .target-basis {
   font-size: 0.75rem;
   color: var(--gray-mid);
-  margin-bottom: 8px;
+  margin-top: 4px;
+  text-align: center;
 }
 
 .target-distance {
@@ -126,6 +127,8 @@
   padding: 0 4px;
   z-index: 2;
   position: relative;
+  display: inline-flex;
+  align-items: baseline;
 }
 
 .distance-value {
@@ -138,8 +141,11 @@
 .distance-unit {
   font-size: 1.5rem;
   color: var(--gray-mid);
-  margin-left: 4px;
-  vertical-align: baseline;
+  position: absolute;
+  left: 100%;
+  bottom: 0;
+  margin-left: 2px;
+  white-space: nowrap;
 }
 
 /* Details - Ellipse zone */
@@ -306,12 +312,18 @@
 }
 
 .btn-finish {
-  background: var(--gray-light);
-  color: var(--gray-dark);
+  background: none;
+  border: none;
+  color: var(--gray-mid);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  align-self: flex-end;
 }
 
 .btn-finish:hover {
-  background: #e0e0e0;
+  color: var(--gray-dark);
 }
 
 /* Last shot prompt card */

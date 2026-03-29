@@ -69,11 +69,22 @@ function App() {
 
       <main className="app-main">
         {view === 'target' && target && (
+          <>
+          <button
+            className="btn btn-finish"
+            onClick={handleFinish}
+            data-testid="finish-button"
+          >
+            練習を終わる
+          </button>
           <div className="target-card" data-testid="target-card">
             <div className="target-card-header">
               <div className="shot-counter">
                 {shotCount}球目
               </div>
+              <h2 className="target-name" data-testid="target-name">
+                {target.name}
+              </h2>
               <button
                 className="btn-help"
                 onClick={() => setShowHelp(true)}
@@ -83,11 +94,6 @@ function App() {
                 ❓
               </button>
             </div>
-
-            <h2 className="target-name" data-testid="target-name">
-              {target.name}
-            </h2>
-            <p className="target-basis">キャリー基準</p>
 
             <div className="target-zone" data-testid="target-zone">
               <div className="ellipse-far" data-testid="target-depth">
@@ -114,6 +120,8 @@ function App() {
               </div>
             </div>
           </div>
+          <p className="target-basis">キャリー基準</p>
+          </>
         )}
 
         {view === 'last-shot-prompt' && (
@@ -260,7 +268,6 @@ function App() {
             </button>
           )}
           {view === 'target' && (
-            <>
               <div className="result-buttons" data-testid="result-buttons">
                 <button
                   className="btn btn-ok"
@@ -284,14 +291,6 @@ function App() {
                   スキップ
                 </button>
               </div>
-              <button
-                className="btn btn-finish"
-                onClick={handleFinish}
-                data-testid="finish-button"
-              >
-                終わる
-              </button>
-            </>
           )}
           {view === 'stats' && (
             <button
