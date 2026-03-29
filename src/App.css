@@ -168,8 +168,13 @@
 
 .result-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
+}
+
+.result-buttons .btn {
+  padding: 16px 12px;
+  font-size: 1rem;
 }
 
 .btn {
@@ -232,9 +237,7 @@
   background: var(--gray-light);
   color: var(--gray-dark);
   flex: 1;
-  font-size: 0.95rem;
-  padding-left: 8px;
-  padding-right: 8px;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 
