@@ -3,8 +3,6 @@ import {
   selectTemplate,
   generateTargetFromTemplate,
   generateRandomTarget,
-  generateDepthHint,
-  generateHazards,
   getTargetCategory,
   computeStats,
 } from '../logic'
@@ -64,12 +62,6 @@ describe('generateTargetFromTemplate', () => {
     distanceMax: 200,
     depthOk: 15,
     widthOk: 20,
-    hazardLeftChance: 0.5,
-    hazardRightChance: 0.5,
-    hazardLongChance: 0.3,
-    hazardShortChance: 0.1,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 10,
   }
 
@@ -80,8 +72,6 @@ describe('generateTargetFromTemplate', () => {
     expect(target.distance).toBeLessThanOrEqual(200)
     expect(target.depthOk).toBe(15)
     expect(target.widthOk).toBe(20)
-    expect(Array.isArray(target.hazards)).toBe(true)
-    expect(target.hazards.length).toBeLessThanOrEqual(2)
   })
 
   it('距離が10ヤード刻みで生成される', () => {
@@ -103,177 +93,6 @@ describe('generateTargetFromTemplate', () => {
       expect(target.distance).toBeLessThanOrEqual(250)
     }
   })
-
-  it('ハザードがない場合はhazardsが空配列', () => {
-    const noHazardTemplate: TargetTemplate = {
-      ...template,
-      hazardLeftChance: 0,
-      hazardRightChance: 0,
-      hazardLongChance: 0,
-      hazardShortChance: 0,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      const target = generateTargetFromTemplate(noHazardTemplate)
-      expect(target.hazards).toEqual([])
-    }
-  })
-
-  it('ハザードが最大2つまでに制限される', () => {
-    const alwaysHazardTemplate: TargetTemplate = {
-      ...template,
-      hazardLeftChance: 1,
-      hazardRightChance: 1,
-      hazardLongChance: 1,
-      hazardShortChance: 1,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      const target = generateTargetFromTemplate(alwaysHazardTemplate)
-      expect(target.hazards.length).toBeLessThanOrEqual(2)
-      expect(target.hazards.length).toBeGreaterThanOrEqual(1)
-    }
-  })
-
-  it('depthHintが生成される', () => {
-    const target = generateTargetFromTemplate(template)
-    expect([null, 'short', 'long']).toContain(target.depthHint)
-  })
-})
-
-describe('generateHazards', () => {
-  it('全ハザード確率0の場合は空配列を返す', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      hazardLeftChance: 0,
-      hazardRightChance: 0,
-      hazardLongChance: 0,
-      hazardShortChance: 0,
-      shortSideHintChance: 0,
-      longSideHintChance: 0,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      expect(generateHazards(template)).toEqual([])
-    }
-  })
-
-  it('全ハザード確率1の場合でも最大2つ', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      hazardLeftChance: 1,
-      hazardRightChance: 1,
-      hazardLongChance: 1,
-      hazardShortChance: 1,
-      shortSideHintChance: 0,
-      longSideHintChance: 0,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      const hazards = generateHazards(template)
-      expect(hazards.length).toBeLessThanOrEqual(2)
-      expect(hazards.length).toBeGreaterThanOrEqual(1)
-    }
-  })
-
-  it('有効な方向のみが含まれる', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      hazardLeftChance: 1,
-      hazardRightChance: 1,
-      hazardLongChance: 1,
-      hazardShortChance: 1,
-      shortSideHintChance: 0,
-      longSideHintChance: 0,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      const hazards = generateHazards(template)
-      for (const h of hazards) {
-        expect(['left', 'right', 'long', 'short']).toContain(h)
-      }
-    }
-  })
-})
-
-describe('generateDepthHint', () => {
-  it('shortSideHintChance=0, longSideHintChance=0の場合はnullを返す', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      hazardLeftChance: 0,
-      hazardRightChance: 0,
-      hazardLongChance: 0,
-      hazardShortChance: 0,
-      shortSideHintChance: 0,
-      longSideHintChance: 0,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      expect(generateDepthHint(template)).toBeNull()
-    }
-  })
-
-  it('shortSideHintChance=1の場合は必ずshortを返す', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      hazardLeftChance: 0,
-      hazardRightChance: 0,
-      hazardLongChance: 0,
-      hazardShortChance: 0,
-      shortSideHintChance: 1,
-      longSideHintChance: 0,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      expect(generateDepthHint(template)).toBe('short')
-    }
-  })
-
-  it('shortSideHintChance=0, longSideHintChance=1の場合は必ずlongを返す', () => {
-    const template: TargetTemplate = {
-      name: 'テスト',
-      distanceMin: 100,
-      distanceMax: 200,
-      depthOk: 15,
-      widthOk: 20,
-      hazardLeftChance: 0,
-      hazardRightChance: 0,
-      hazardLongChance: 0,
-      hazardShortChance: 0,
-      shortSideHintChance: 0,
-      longSideHintChance: 1,
-      weight: 10,
-    }
-
-    for (let i = 0; i < 50; i++) {
-      expect(generateDepthHint(template)).toBe('long')
-    }
-  })
 })
 
 describe('generateRandomTarget', () => {
@@ -285,9 +104,6 @@ describe('generateRandomTarget', () => {
     expect(target.distance).toBeGreaterThan(0)
     expect(target.depthOk).toBeGreaterThan(0)
     expect(target.widthOk).toBeGreaterThan(0)
-    expect(Array.isArray(target.hazards)).toBe(true)
-    expect(target.hazards.length).toBeLessThanOrEqual(2)
-    expect([null, 'short', 'long']).toContain(target.depthHint)
   })
 
   it('距離が250yを超えない', () => {
@@ -328,16 +144,7 @@ describe('targetTemplates', () => {
   })
 
   it('ハザード確率が0-1の範囲内', () => {
-    for (const template of targetTemplates) {
-      expect(template.hazardLeftChance).toBeGreaterThanOrEqual(0)
-      expect(template.hazardLeftChance).toBeLessThanOrEqual(1)
-      expect(template.hazardRightChance).toBeGreaterThanOrEqual(0)
-      expect(template.hazardRightChance).toBeLessThanOrEqual(1)
-      expect(template.hazardLongChance).toBeGreaterThanOrEqual(0)
-      expect(template.hazardLongChance).toBeLessThanOrEqual(1)
-      expect(template.hazardShortChance).toBeGreaterThanOrEqual(0)
-      expect(template.hazardShortChance).toBeLessThanOrEqual(1)
-    }
+    // ハザード機能削除済み - テスト不要
   })
 
   it('最大距離が250yを超えるテンプレートがない', () => {
@@ -347,13 +154,7 @@ describe('targetTemplates', () => {
   })
 
   it('ヒント確率が0-1の範囲内で合計が1以下', () => {
-    for (const template of targetTemplates) {
-      expect(template.shortSideHintChance).toBeGreaterThanOrEqual(0)
-      expect(template.shortSideHintChance).toBeLessThanOrEqual(1)
-      expect(template.longSideHintChance).toBeGreaterThanOrEqual(0)
-      expect(template.longSideHintChance).toBeLessThanOrEqual(1)
-      expect(template.shortSideHintChance + template.longSideHintChance).toBeLessThanOrEqual(1)
-    }
+    // ヒント機能削除済み - テスト不要
   })
 
   it('アプローチショットのテンプレートが存在する', () => {
@@ -378,12 +179,6 @@ describe('generateTargetFromTemplate with maxDistance', () => {
     distanceMax: 250,
     depthOk: 30,
     widthOk: 30,
-    hazardLeftChance: 0.5,
-    hazardRightChance: 0.5,
-    hazardLongChance: 0.2,
-    hazardShortChance: 0.1,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 10,
   }
 
@@ -438,7 +233,6 @@ describe('computeStats', () => {
     expect(stats.totalShots).toBe(0)
     expect(stats.totalSuccess).toBe(0)
     expect(stats.totalMiss).toBe(0)
-    expect(stats.totalHazard).toBe(0)
     expect(stats.scenarioStats).toHaveLength(0)
   })
 
@@ -452,7 +246,6 @@ describe('computeStats', () => {
     expect(stats.totalShots).toBe(3)
     expect(stats.totalSuccess).toBe(3)
     expect(stats.totalMiss).toBe(0)
-    expect(stats.totalHazard).toBe(0)
     expect(stats.scenarioStats).toHaveLength(2)
   })
 
@@ -461,27 +254,24 @@ describe('computeStats', () => {
       { targetName: 'ドライバー', result: 'success' },
       { targetName: 'ドライバー', result: 'miss' },
       { targetName: 'アプローチ', result: 'success' },
-      { targetName: 'アプローチ', result: 'hazard' },
+      { targetName: 'アプローチ', result: 'miss' },
       { targetName: 'アプローチ', result: 'success' },
     ]
     const stats = computeStats(results)
     expect(stats.totalShots).toBe(5)
     expect(stats.totalSuccess).toBe(3)
-    expect(stats.totalMiss).toBe(1)
-    expect(stats.totalHazard).toBe(1)
+    expect(stats.totalMiss).toBe(2)
 
     const driverStat = stats.scenarioStats.find((s) => s.name === 'ドライバー')
     expect(driverStat).toBeDefined()
     expect(driverStat!.successCount).toBe(1)
     expect(driverStat!.missCount).toBe(1)
-    expect(driverStat!.hazardCount).toBe(0)
     expect(driverStat!.totalCount).toBe(2)
 
     const approachStat = stats.scenarioStats.find((s) => s.name === 'アプローチ')
     expect(approachStat).toBeDefined()
     expect(approachStat!.successCount).toBe(2)
-    expect(approachStat!.missCount).toBe(0)
-    expect(approachStat!.hazardCount).toBe(1)
+    expect(approachStat!.missCount).toBe(1)
     expect(approachStat!.totalCount).toBe(3)
   })
 
@@ -524,12 +314,6 @@ describe('generateTargetFromTemplate with strictness', () => {
     distanceMax: 200,
     depthOk: 20,
     widthOk: 20,
-    hazardLeftChance: 0.5,
-    hazardRightChance: 0.5,
-    hazardLongChance: 0.2,
-    hazardShortChance: 0.1,
-    shortSideHintChance: 0,
-    longSideHintChance: 0,
     weight: 10,
   }
 

@@ -158,86 +158,6 @@
   font-weight: 600;
 }
 
-/* Hazard layout - 4-direction around target */
-.hazard-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-
-.hazard-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-}
-
-.hazard-row-middle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.hazard-zone {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 6px 14px;
-  border-radius: 8px;
-  min-width: 60px;
-}
-
-.hazard-zone-side {
-  min-width: 54px;
-}
-
-.hazard-zone.hazard-active {
-  background: var(--red-bg);
-  color: var(--red);
-}
-
-.hazard-zone.hazard-safe {
-  background: var(--green-bg);
-  color: var(--green-mid);
-}
-
-.hazard-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.hazard-status {
-  font-size: 0.75rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-/* Depth hint */
-.depth-hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 12px;
-  padding: 8px 16px;
-  background: #fff8e1;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: #f57f17;
-  font-weight: 600;
-}
-
-.depth-hint-icon {
-  font-size: 1rem;
-}
-
-.depth-hint-text {
-  line-height: 1.4;
-}
-
 /* Buttons */
 .button-group {
   display: flex;
@@ -248,8 +168,13 @@
 
 .result-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
+}
+
+.result-buttons .btn {
+  padding: 16px 12px;
+  font-size: 1rem;
 }
 
 .btn {
@@ -290,7 +215,7 @@
   background: var(--green-mid);
   color: var(--white);
   box-shadow: 0 4px 12px rgba(45, 138, 78, 0.3);
-  flex: 1;
+  flex: 2;
 }
 
 .btn-ok:hover {
@@ -301,22 +226,23 @@
   background: var(--red);
   color: var(--white);
   box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
-  flex: 1;
+  flex: 2;
 }
 
 .btn-ng:hover {
   background: #b71c1c;
 }
 
-.btn-hazard {
-  background: #f57f17;
-  color: var(--white);
-  box-shadow: 0 4px 12px rgba(245, 127, 23, 0.3);
+.btn-skip {
+  background: var(--gray-light);
+  color: var(--gray-dark);
   flex: 1;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
-.btn-hazard:hover {
-  background: #e65100;
+.btn-skip:hover {
+  background: #e0e0e0;
 }
 
 .btn-finish {
@@ -404,10 +330,6 @@
   color: var(--red);
 }
 
-.stats-breakdown-hazard {
-  color: #f57f17;
-}
-
 .stats-scenarios {
   border-top: 1px solid var(--gray-light);
   padding-top: 16px;
@@ -445,13 +367,6 @@
   font-size: 0.75rem;
   font-weight: 400;
   color: var(--gray-mid);
-  margin-left: 4px;
-}
-
-.stats-scenario-hazard {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #f57f17;
   margin-left: 4px;
 }
 

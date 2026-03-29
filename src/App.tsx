@@ -1,18 +1,10 @@
 import { useState } from 'react'
-import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel, HazardDirection } from './types'
+import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel } from './types'
 import { DEFAULT_MAX_DISTANCE, STRICTNESS_LABELS } from './types'
 import { generateRandomTarget, computeStats } from './logic'
 import './App.css'
 
 type AppView = 'welcome' | 'target' | 'last-shot-prompt' | 'stats'
-
-/** ハザード方向の表示ラベル */
-const HAZARD_LABELS: Record<string, string> = {
-  left: '左',
-  right: '右',
-  long: '奥',
-  short: '手前',
-}
 
 function App() {
   const [view, setView] = useState<AppView>('welcome')
@@ -34,6 +26,11 @@ function App() {
     if (target) {
       setShotResults((prev) => [...prev, { targetName: target.name, result }])
     }
+    setTarget(generateRandomTarget(maxDistance, strictness, target?.name))
+    setShotCount((c) => c + 1)
+  }
+
+  const handleSkip = () => {
     setTarget(generateRandomTarget(maxDistance, strictness, target?.name))
     setShotCount((c) => c + 1)
   }
@@ -67,9 +64,6 @@ function App() {
     }
   }
 
-  const hasHazard = (direction: HazardDirection) =>
-    target?.hazards.includes(direction) ?? false
-
   return (
     <div className="app">
       <header className="app-header">
@@ -88,71 +82,24 @@ function App() {
               {target.name}
             </h2>
 
-            <div className="hazard-layout" data-testid="hazard-indicators">
-              <div className="hazard-row hazard-row-top">
-                <div className={`hazard-zone ${hasHazard('long') ? 'hazard-active' : 'hazard-safe'}`}>
-                  <span className="hazard-label">{HAZARD_LABELS.long}</span>
-                  <span className="hazard-status">
-                    {hasHazard('long') ? '⚠ ハザード' : 'セーフ'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="hazard-row hazard-row-middle">
-                <div className={`hazard-zone hazard-zone-side ${hasHazard('left') ? 'hazard-active' : 'hazard-safe'}`}>
-                  <span className="hazard-label">{HAZARD_LABELS.left}</span>
-                  <span className="hazard-status">
-                    {hasHazard('left') ? '⚠ ハザード' : 'セーフ'}
-                  </span>
-                </div>
-
-                <div className="target-zone" data-testid="target-zone">
-                  <div className="target-zone-main">
-                    <div className="target-zone-box">
-                      <div className="target-distance" data-testid="target-distance">
-                        <span className="distance-value">{target.distance}</span>
-                        <span className="distance-unit">yd</span>
-                      </div>
-                    </div>
-                    <div className="target-zone-depth" data-testid="target-depth">
-                      <span className="zone-arrow zone-arrow-depth">↕</span>
-                      <span className="zone-value">±{target.depthOk}yd</span>
-                    </div>
-                  </div>
-                  <div className="target-zone-width" data-testid="target-width">
-                    <span className="zone-arrow zone-arrow-width">↔</span>
-                    <span className="zone-value">±{target.widthOk / 2}yd</span>
+            <div className="target-zone" data-testid="target-zone">
+              <div className="target-zone-main">
+                <div className="target-zone-box">
+                  <div className="target-distance" data-testid="target-distance">
+                    <span className="distance-value">{target.distance}</span>
+                    <span className="distance-unit">yd</span>
                   </div>
                 </div>
-
-                <div className={`hazard-zone hazard-zone-side ${hasHazard('right') ? 'hazard-active' : 'hazard-safe'}`}>
-                  <span className="hazard-label">{HAZARD_LABELS.right}</span>
-                  <span className="hazard-status">
-                    {hasHazard('right') ? '⚠ ハザード' : 'セーフ'}
-                  </span>
+                <div className="target-zone-depth" data-testid="target-depth">
+                  <span className="zone-arrow zone-arrow-depth">↕</span>
+                  <span className="zone-value">±{target.depthOk}yd</span>
                 </div>
               </div>
-
-              <div className="hazard-row hazard-row-bottom">
-                <div className={`hazard-zone ${hasHazard('short') ? 'hazard-active' : 'hazard-safe'}`}>
-                  <span className="hazard-label">{HAZARD_LABELS.short}</span>
-                  <span className="hazard-status">
-                    {hasHazard('short') ? '⚠ ハザード' : 'セーフ'}
-                  </span>
-                </div>
+              <div className="target-zone-width" data-testid="target-width">
+                <span className="zone-arrow zone-arrow-width">↔</span>
+                <span className="zone-value">±{target.widthOk / 2}yd</span>
               </div>
             </div>
-
-            {target.depthHint && (
-              <div className="depth-hint" data-testid="depth-hint">
-                <span className="depth-hint-icon">💡</span>
-                <span className="depth-hint-text">
-                  {target.depthHint === 'short'
-                    ? '手前から攻める（奥は危険）'
-                    : '奥でもOK（手前に罠あり）'}
-                </span>
-              </div>
-            )}
           </div>
         )}
 
@@ -165,21 +112,14 @@ function App() {
                 onClick={() => handleLastShotResult('success')}
                 data-testid="last-ok-button"
               >
-                ⭕ OK
+                ⭕ 成功
               </button>
               <button
                 className="btn btn-ng"
                 onClick={() => handleLastShotResult('miss')}
                 data-testid="last-ng-button"
               >
-                ❌ NG
-              </button>
-              <button
-                className="btn btn-hazard"
-                onClick={() => handleLastShotResult('hazard')}
-                data-testid="last-hazard-button"
-              >
-                ⚠ ハザード
+                ❌ 失敗
               </button>
             </div>
             <button
@@ -208,9 +148,6 @@ function App() {
                 <span className="stats-breakdown-item stats-breakdown-ng">
                   ❌ {stats.totalMiss}
                 </span>
-                <span className="stats-breakdown-item stats-breakdown-hazard">
-                  ⚠ {stats.totalHazard}
-                </span>
               </div>
             </div>
 
@@ -225,11 +162,6 @@ function App() {
                       <span className="stats-scenario-detail">
                         ({scenario.successCount}/{scenario.totalCount})
                       </span>
-                      {scenario.hazardCount > 0 && (
-                        <span className="stats-scenario-hazard">
-                          ⚠{scenario.hazardCount}
-                        </span>
-                      )}
                     </span>
                   </div>
                 ))}
@@ -275,21 +207,21 @@ function App() {
                   onClick={() => handleShotResult('success')}
                   data-testid="ok-button"
                 >
-                  ⭕ OK
+                  ⭕ 成功
                 </button>
                 <button
                   className="btn btn-ng"
                   onClick={() => handleShotResult('miss')}
                   data-testid="ng-button"
                 >
-                  ❌ NG
+                  ❌ 失敗
                 </button>
                 <button
-                  className="btn btn-hazard"
-                  onClick={() => handleShotResult('hazard')}
-                  data-testid="hazard-button"
+                  className="btn btn-skip"
+                  onClick={handleSkip}
+                  data-testid="skip-button"
                 >
-                  ⚠ ハザード
+                  スキップ
                 </button>
               </div>
               <button
