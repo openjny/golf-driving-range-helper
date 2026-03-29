@@ -116,6 +116,10 @@
 
 .target-distance {
   margin: 0;
+  background: var(--green-bg);
+  padding: 0 4px;
+  z-index: 2;
+  position: relative;
 }
 
 .distance-value {
