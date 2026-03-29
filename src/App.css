@@ -162,8 +162,8 @@
 .ellipse-far,
 .ellipse-near {
   font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--gray-mid);
+  font-weight: 700;
+  color: var(--green-dark);
 }
 
 .ellipse-shape {
