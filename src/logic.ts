@@ -58,6 +58,44 @@ export function getTargetCategory(name: string): TargetCategory {
 }
 
 /**
+ * テンプレート名から baseTemplates 内のインデックスを返す
+ */
+function getTemplateIndex(name: string): number {
+  return baseTemplates.findIndex((t) => t.name === name)
+}
+
+/**
+ * 前のショットに対して次のショットが許可されるかを判定する
+ *
+ * ゴルフの本番に近いショット順序を再現する:
+ * - 同じショットの連続は不可
+ * - ホール内ではグリーンに近づく方向（インデックス増加）のみ許可
+ * - ミドルショット（短）以降は新しいホール（ロングショット）に戻れる
+ * - アプローチ後は任意のショット（新ホール開始）が可能
+ */
+export function isAllowedTransition(prevName: string, nextName: string): boolean {
+  const prevIdx = getTemplateIndex(prevName)
+  const nextIdx = getTemplateIndex(nextName)
+
+  // 未知のテンプレート名はフォールバックとして許可
+  if (prevIdx === -1 || nextIdx === -1) return true
+
+  // 同じテンプレートの連続は不可
+  if (prevIdx === nextIdx) return false
+
+  // アプローチ後（index 4, 5）は任意の異なるテンプレートOK（新ホール）
+  if (prevIdx >= 4) return true
+
+  // グリーンに近づく方向（前進）は常にOK
+  if (nextIdx > prevIdx) return true
+
+  // ミドルショット（短）以降（index >= 2）からロングショットへ戻るのはOK（新ホール）
+  if (nextIdx === 0 && prevIdx >= 2) return true
+
+  return false
+}
+
+/**
  * プロフィールの距離帯情報を計算する（プレビュー表示用）
  */
 export function getDistanceRangeInfo(profile: DistanceProfile, strictness: StrictnessLevel = 'normal'): DistanceRangeInfo[] {
@@ -101,29 +139,24 @@ export function generateTargetFromTemplate(
 
 /**
  * ランダムなターゲットを1つ生成する
- * previousTargetName を渡すと、同一カテゴリの連続出現を防ぐ
+ * previousTargetName を渡すと、本番に近いショット順序を維持する
  */
 export function generateRandomTarget(
   profile: DistanceProfile,
   strictness: StrictnessLevel = 'normal',
   previousTargetName?: string,
 ): Target {
-  const templates = buildTemplates(profile)
-  const previousCategory = previousTargetName ? getTargetCategory(previousTargetName) : null
-  let template: TargetTemplate
-  let attempts = 0
-  const maxAttempts = 20
+  const allTemplates = buildTemplates(profile)
 
-  do {
-    template = selectTemplate(templates)
-    attempts++
-  } while (
-    previousCategory !== null &&
-    previousCategory !== 'other' &&
-    getTargetCategory(template.name) === previousCategory &&
-    attempts < maxAttempts
-  )
+  let templates = allTemplates
+  if (previousTargetName) {
+    const filtered = allTemplates.filter((t) => isAllowedTransition(previousTargetName, t.name))
+    if (filtered.length > 0) {
+      templates = filtered
+    }
+  }
 
+  const template = selectTemplate(templates)
   return generateTargetFromTemplate(template, profile.maxDistance, strictness)
 }
 

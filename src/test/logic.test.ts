@@ -5,6 +5,7 @@ import {
   generateTargetFromTemplate,
   generateRandomTarget,
   getTargetCategory,
+  isAllowedTransition,
   getProfile,
   getDistanceRangeInfo,
   computeStats,
@@ -376,53 +377,123 @@ describe('generateTargetFromTemplate with strictness', () => {
   })
 })
 
-describe('generateRandomTarget with consecutive prevention', () => {
-  it('ロングショット連続を防ぐ（統計的テスト）', () => {
-    let consecutiveCount = 0
+describe('isAllowedTransition', () => {
+  it('同じテンプレートの連続は不可', () => {
+    expect(isAllowedTransition('ロングショット', 'ロングショット')).toBe(false)
+    expect(isAllowedTransition('ミドルショット（長）', 'ミドルショット（長）')).toBe(false)
+    expect(isAllowedTransition('アプローチ（ピッチ）', 'アプローチ（ピッチ）')).toBe(false)
+  })
+
+  it('グリーンに近づく方向（前進）は許可', () => {
+    expect(isAllowedTransition('ロングショット', 'ミドルショット（長）')).toBe(true)
+    expect(isAllowedTransition('ロングショット', 'アプローチ（チップ&ラン）')).toBe(true)
+    expect(isAllowedTransition('ミドルショット（長）', 'ハーフショット')).toBe(true)
+    expect(isAllowedTransition('ハーフショット', 'アプローチ（ピッチ）')).toBe(true)
+  })
+
+  it('逆方向（ロング以外への後退）は不可', () => {
+    expect(isAllowedTransition('ミドルショット（長）', 'ロングショット')).toBe(false)
+    expect(isAllowedTransition('ハーフショット', 'ミドルショット（長）')).toBe(false)
+    expect(isAllowedTransition('ハーフショット', 'ミドルショット（短）')).toBe(false)
+  })
+
+  it('ミドルショット（短）以降からロングショットへの復帰は許可（新ホール）', () => {
+    expect(isAllowedTransition('ミドルショット（短）', 'ロングショット')).toBe(true)
+    expect(isAllowedTransition('ハーフショット', 'ロングショット')).toBe(true)
+  })
+
+  it('アプローチ後は任意の異なるテンプレートが許可（新ホール）', () => {
+    expect(isAllowedTransition('アプローチ（ピッチ）', 'ロングショット')).toBe(true)
+    expect(isAllowedTransition('アプローチ（ピッチ）', 'ミドルショット（長）')).toBe(true)
+    expect(isAllowedTransition('アプローチ（ピッチ）', 'アプローチ（チップ&ラン）')).toBe(true)
+    expect(isAllowedTransition('アプローチ（チップ&ラン）', 'ロングショット')).toBe(true)
+    expect(isAllowedTransition('アプローチ（チップ&ラン）', 'ハーフショット')).toBe(true)
+  })
+
+  it('未知のテンプレート名はフォールバックとして許可', () => {
+    expect(isAllowedTransition('不明なショット', 'ロングショット')).toBe(true)
+    expect(isAllowedTransition('ロングショット', '不明なショット')).toBe(true)
+  })
+})
+
+describe('generateRandomTarget with shot transition rules', () => {
+  it('ロングショット後にロングショットが出ない（統計的テスト）', () => {
+    let sameCount = 0
     const iterations = 500
 
     for (let i = 0; i < iterations; i++) {
       const target = generateRandomTarget(defaultProfile, 'normal', 'ロングショット')
-      if (getTargetCategory(target.name) === 'long') {
-        consecutiveCount++
+      if (target.name === 'ロングショット') {
+        sameCount++
       }
     }
 
-    expect(consecutiveCount / iterations).toBeLessThan(0.05)
+    expect(sameCount).toBe(0)
   })
 
-  it('アプローチ連続を防ぐ（統計的テスト）', () => {
-    let consecutiveCount = 0
-    const iterations = 500
-
-    for (let i = 0; i < iterations; i++) {
-      const target = generateRandomTarget(defaultProfile, 'normal', 'アプローチ（ピッチ）')
-      if (getTargetCategory(target.name) === 'approach') {
-        consecutiveCount++
-      }
+  it('ロングショット後に逆方向のショットが出ない', () => {
+    // ロングショットはインデックス0なので、逆方向はない（すべて前進）
+    // ロングショット自身の連続だけが禁止
+    for (let i = 0; i < 200; i++) {
+      const target = generateRandomTarget(defaultProfile, 'normal', 'ロングショット')
+      expect(target.name).not.toBe('ロングショット')
     }
-
-    expect(consecutiveCount / iterations).toBeLessThan(0.05)
   })
 
-  it('otherカテゴリは連続防止の対象外', () => {
-    let otherCount = 0
-    const iterations = 500
-
-    for (let i = 0; i < iterations; i++) {
+  it('ミドルショット（長）後にロングショットが出ない', () => {
+    for (let i = 0; i < 200; i++) {
       const target = generateRandomTarget(defaultProfile, 'normal', 'ミドルショット（長）')
-      if (getTargetCategory(target.name) === 'other') {
-        otherCount++
-      }
+      expect(target.name).not.toBe('ミドルショット（長）')
+      expect(target.name).not.toBe('ロングショット')
+    }
+  })
+
+  it('ハーフショット後にミドルショットが出ない', () => {
+    for (let i = 0; i < 200; i++) {
+      const target = generateRandomTarget(defaultProfile, 'normal', 'ハーフショット')
+      expect(target.name).not.toBe('ハーフショット')
+      expect(target.name).not.toBe('ミドルショット（長）')
+      expect(target.name).not.toBe('ミドルショット（短）')
+    }
+  })
+
+  it('アプローチ後は全種類が出現しうる（統計的テスト）', () => {
+    const names = new Set<string>()
+    for (let i = 0; i < 1000; i++) {
+      const target = generateRandomTarget(defaultProfile, 'normal', 'アプローチ（ピッチ）')
+      names.add(target.name)
     }
 
-    expect(otherCount / iterations).toBeGreaterThan(0.1)
+    // アプローチ（ピッチ）自身以外の5種類が出現する
+    expect(names.size).toBe(5)
+    expect(names.has('アプローチ（ピッチ）')).toBe(false)
   })
 
   it('previousTargetNameが未指定でも正常に動作する', () => {
     const target = generateRandomTarget(defaultProfile, 'normal')
     expect(target).toBeDefined()
     expect(target.name).toBeTruthy()
+  })
+
+  it('重み付けが許可テンプレート間で維持される（統計的テスト）', () => {
+    // アプローチ（チップ&ラン）後は全5テンプレートが許可される
+    const counts = new Map<string, number>()
+    const iterations = 10000
+
+    for (let i = 0; i < iterations; i++) {
+      const target = generateRandomTarget(defaultProfile, 'normal', 'アプローチ（チップ&ラン）')
+      counts.set(target.name, (counts.get(target.name) || 0) + 1)
+    }
+
+    // アプローチ（チップ&ラン）以外のテンプレートの重みで比率を検証
+    const templates = buildTemplates(defaultProfile).filter((t) => t.name !== 'アプローチ（チップ&ラン）')
+    const totalWeight = templates.reduce((s, t) => s + t.weight, 0)
+
+    for (const template of templates) {
+      const expected = template.weight / totalWeight
+      const actual = (counts.get(template.name) || 0) / iterations
+      expect(actual).toBeCloseTo(expected, 1)
+    }
   })
 })
 
