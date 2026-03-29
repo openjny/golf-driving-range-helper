@@ -1,20 +1,61 @@
 import { useState } from 'react'
-import type { Target } from './types'
-import { generateRandomTarget } from './logic'
+import type { Target, ShotResult, SessionStats } from './types'
+import { DEFAULT_MAX_DISTANCE } from './types'
+import { generateRandomTarget, computeStats } from './logic'
 import './App.css'
 
+type AppView = 'welcome' | 'target' | 'last-shot-prompt' | 'stats'
+
 function App() {
+  const [view, setView] = useState<AppView>('welcome')
   const [target, setTarget] = useState<Target | null>(null)
   const [shotCount, setShotCount] = useState(0)
+  const [shotResults, setShotResults] = useState<ShotResult[]>([])
+  const [maxDistance, setMaxDistance] = useState(DEFAULT_MAX_DISTANCE)
+  const [showSettings, setShowSettings] = useState(false)
+  const [stats, setStats] = useState<SessionStats | null>(null)
 
-  const handleNextTarget = () => {
-    setTarget(generateRandomTarget())
+  const handleStart = () => {
+    setTarget(generateRandomTarget(maxDistance))
+    setShotCount(1)
+    setView('target')
+  }
+
+  const handleShotResult = (success: boolean) => {
+    if (target) {
+      setShotResults((prev) => [...prev, { targetName: target.name, success }])
+    }
+    setTarget(generateRandomTarget(maxDistance))
     setShotCount((c) => c + 1)
+  }
+
+  const handleFinish = () => {
+    setView('last-shot-prompt')
+  }
+
+  const handleLastShotResult = (success: boolean | null) => {
+    let allResults = shotResults
+    if (success !== null && target) {
+      allResults = [...shotResults, { targetName: target.name, success }]
+      setShotResults(allResults)
+    }
+    setStats(computeStats(allResults))
+    setView('stats')
   }
 
   const handleReset = () => {
     setTarget(null)
     setShotCount(0)
+    setShotResults([])
+    setStats(null)
+    setView('welcome')
+  }
+
+  const handleMaxDistanceChange = (value: string) => {
+    const num = parseInt(value, 10)
+    if (!isNaN(num) && num >= 50 && num <= 400) {
+      setMaxDistance(Math.round(num / 10) * 10)
+    }
   }
 
   return (
@@ -25,7 +66,7 @@ function App() {
       </header>
 
       <main className="app-main">
-        {target ? (
+        {view === 'target' && target && (
           <div className="target-card" data-testid="target-card">
             <div className="shot-counter">
               {shotCount}球目
@@ -84,7 +125,71 @@ function App() {
               </div>
             )}
           </div>
-        ) : (
+        )}
+
+        {view === 'last-shot-prompt' && (
+          <div className="prompt-card" data-testid="last-shot-prompt">
+            <h2 className="prompt-title">最後のショットの結果は？</h2>
+            <div className="result-buttons">
+              <button
+                className="btn btn-ok"
+                onClick={() => handleLastShotResult(true)}
+                data-testid="last-ok-button"
+              >
+                ⭕ OK
+              </button>
+              <button
+                className="btn btn-ng"
+                onClick={() => handleLastShotResult(false)}
+                data-testid="last-ng-button"
+              >
+                ❌ NG
+              </button>
+            </div>
+            <button
+              className="btn btn-secondary"
+              onClick={() => handleLastShotResult(null)}
+              data-testid="last-skip-button"
+            >
+              打っていない
+            </button>
+          </div>
+        )}
+
+        {view === 'stats' && stats && (
+          <div className="stats-card" data-testid="stats-card">
+            <h2 className="stats-title">📊 練習結果</h2>
+
+            <div className="stats-overall">
+              <div className="stats-total-shots">{stats.totalShots}球</div>
+              <div className="stats-success-rate" data-testid="stats-success-rate">
+                成功率 {stats.totalShots > 0 ? Math.round((stats.totalSuccess / stats.totalShots) * 100) : 0}%
+              </div>
+              <div className="stats-success-count">
+                ⭕ {stats.totalSuccess} / {stats.totalShots}
+              </div>
+            </div>
+
+            {stats.scenarioStats.length > 0 && (
+              <div className="stats-scenarios" data-testid="stats-scenarios">
+                <h3 className="stats-scenario-title">場面別</h3>
+                {stats.scenarioStats.map((scenario) => (
+                  <div key={scenario.name} className="stats-scenario-row">
+                    <span className="stats-scenario-name">{scenario.name}</span>
+                    <span className="stats-scenario-result">
+                      {Math.round((scenario.successCount / scenario.totalCount) * 100)}%
+                      <span className="stats-scenario-detail">
+                        ({scenario.successCount}/{scenario.totalCount})
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {view === 'welcome' && (
           <div className="welcome-card">
             <p className="welcome-message">
               ボタンを押してターゲットを表示しましょう。<br />
@@ -95,23 +200,86 @@ function App() {
         )}
 
         <div className="button-group">
-          <button
-            className="btn btn-primary"
-            onClick={handleNextTarget}
-            data-testid="next-button"
-          >
-            {target ? '次のターゲット' : 'スタート'}
-          </button>
-          {target && (
+          {view === 'welcome' && (
+            <>
+              <button
+                className="btn btn-primary"
+                onClick={handleStart}
+                data-testid="next-button"
+              >
+                スタート
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowSettings(!showSettings)}
+                data-testid="settings-button"
+              >
+                ⚙️ 設定
+              </button>
+            </>
+          )}
+          {view === 'target' && (
+            <>
+              <div className="result-buttons" data-testid="result-buttons">
+                <button
+                  className="btn btn-ok"
+                  onClick={() => handleShotResult(true)}
+                  data-testid="ok-button"
+                >
+                  ⭕ OK
+                </button>
+                <button
+                  className="btn btn-ng"
+                  onClick={() => handleShotResult(false)}
+                  data-testid="ng-button"
+                >
+                  ❌ NG
+                </button>
+              </div>
+              <button
+                className="btn btn-finish"
+                onClick={handleFinish}
+                data-testid="finish-button"
+              >
+                終わる
+              </button>
+            </>
+          )}
+          {view === 'stats' && (
             <button
-              className="btn btn-secondary"
+              className="btn btn-primary"
               onClick={handleReset}
               data-testid="reset-button"
             >
-              リセット
+              もう一度
             </button>
           )}
         </div>
+
+        {showSettings && view === 'welcome' && (
+          <div className="settings-panel" data-testid="settings-panel">
+            <h3 className="settings-title">⚙️ 設定</h3>
+            <div className="settings-row">
+              <label className="settings-label" htmlFor="max-distance">
+                最大飛距離（yd）
+              </label>
+              <input
+                id="max-distance"
+                className="settings-input"
+                type="number"
+                min={50}
+                max={400}
+                step={10}
+                value={maxDistance}
+                onChange={(e) => handleMaxDistanceChange(e.target.value)}
+                data-testid="max-distance-input"
+              />
+            </div>
+            <p className="settings-hint">
+              ドライバーの最大飛距離を設定すると、すべてのターゲット距離が調整されます。
+            </p>
+          </div>
+        )}
       </main>
 
       <footer className="app-footer">
