@@ -300,7 +300,7 @@
 }
 
 .btn-skip {
-  background: var(--gray-light);
+  background: none;
   color: var(--gray-dark);
   flex: 1;
   font-size: 0.85rem;
@@ -308,7 +308,7 @@
 }
 
 .btn-skip:hover {
-  background: #e0e0e0;
+  background: var(--gray-light);
 }
 
 .btn-finish {
