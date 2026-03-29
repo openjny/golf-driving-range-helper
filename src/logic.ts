@@ -1,5 +1,6 @@
-import type { DepthHint, Target, TargetTemplate, ShotResult, SessionStats } from './types'
-import { DEFAULT_MAX_DISTANCE } from './types'
+import type { DepthHint, Target, TargetTemplate, TargetCategory, ShotResult, SessionStats } from './types'
+import { DEFAULT_MAX_DISTANCE, STRICTNESS_MULTIPLIERS } from './types'
+import type { StrictnessLevel } from './types'
 import { targetTemplates } from './targets'
 
 /**
@@ -42,13 +43,25 @@ export function generateDepthHint(template: TargetTemplate): DepthHint {
 }
 
 /**
+ * ターゲット名からカテゴリを判定する（連続防止用）
+ */
+export function getTargetCategory(name: string): TargetCategory {
+  if (name.includes('ドライバー')) return 'driver'
+  if (name.includes('ロングアイアン')) return 'long-iron'
+  if (name.includes('アプローチ')) return 'approach'
+  return 'other'
+}
+
+/**
  * ターゲットテンプレートから具体的なターゲットを生成する
  */
 export function generateTargetFromTemplate(
   template: TargetTemplate,
   maxDistance: number = DEFAULT_MAX_DISTANCE,
+  strictness: StrictnessLevel = 'normal',
 ): Target {
   const scale = maxDistance / DEFAULT_MAX_DISTANCE
+  const strictnessMultiplier = STRICTNESS_MULTIPLIERS[strictness]
   // 距離は10ヤード刻みでランダムに生成（スケールを適用）
   const scaledMin = Math.max(10, Math.round((template.distanceMin * scale) / 10) * 10)
   const scaledMax = Math.max(10, Math.round((template.distanceMax * scale) / 10) * 10)
@@ -58,8 +71,8 @@ export function generateTargetFromTemplate(
   return {
     name: template.name,
     distance,
-    depthOk: template.depthOk,
-    widthOk: template.widthOk,
+    depthOk: Math.max(1, Math.round(template.depthOk * strictnessMultiplier)),
+    widthOk: Math.max(1, Math.round(template.widthOk * strictnessMultiplier)),
     obLeft: Math.random() < template.obLeftChance,
     obRight: Math.random() < template.obRightChance,
     depthHint: generateDepthHint(template),
@@ -68,10 +81,30 @@ export function generateTargetFromTemplate(
 
 /**
  * ランダムなターゲットを1つ生成する
+ * previousTargetName を渡すと、同一カテゴリ（ドライバー/ロングアイアン/アプローチ）の
+ * 連続出現を防ぐ
  */
-export function generateRandomTarget(maxDistance: number = DEFAULT_MAX_DISTANCE): Target {
-  const template = selectTemplate()
-  return generateTargetFromTemplate(template, maxDistance)
+export function generateRandomTarget(
+  maxDistance: number = DEFAULT_MAX_DISTANCE,
+  strictness: StrictnessLevel = 'normal',
+  previousTargetName?: string,
+): Target {
+  const previousCategory = previousTargetName ? getTargetCategory(previousTargetName) : null
+  let template: TargetTemplate
+  let attempts = 0
+  const maxAttempts = 20
+
+  do {
+    template = selectTemplate()
+    attempts++
+  } while (
+    previousCategory !== null &&
+    previousCategory !== 'other' &&
+    getTargetCategory(template.name) === previousCategory &&
+    attempts < maxAttempts
+  )
+
+  return generateTargetFromTemplate(template, maxDistance, strictness)
 }
 
 /**

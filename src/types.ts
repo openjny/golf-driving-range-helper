@@ -73,3 +73,25 @@ export interface SessionStats {
 
 /** デフォルトの最大飛距離（ヤード） */
 export const DEFAULT_MAX_DISTANCE = 250
+
+/** シビアさのレベル */
+export type StrictnessLevel = 'easy' | 'normal' | 'strict' | 'veryStrict'
+
+/** シビアさレベルごとの倍率 */
+export const STRICTNESS_MULTIPLIERS: Record<StrictnessLevel, number> = {
+  easy: 1.5,
+  normal: 1.0,
+  strict: 0.75,
+  veryStrict: 0.5,
+}
+
+/** シビアさレベルの表示名 */
+export const STRICTNESS_LABELS: Record<StrictnessLevel, string> = {
+  easy: 'ゆるい',
+  normal: 'ふつう',
+  strict: 'シビア',
+  veryStrict: 'とてもシビア',
+}
+
+/** ターゲットカテゴリ（連続防止用） */
+export type TargetCategory = 'driver' | 'long-iron' | 'approach' | 'other'
