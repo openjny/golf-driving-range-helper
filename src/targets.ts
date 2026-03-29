@@ -1,130 +1,58 @@
 import type { TargetTemplate } from './types'
 
 /**
- * ターゲットテンプレート一覧
+ * ターゲットテンプレート一覧（距離帯ベース）
  *
- * 出現頻度は実際のラウンド（Par72: Par3×4, Par4×10, Par5×4）での
- * ショット配分に近づけている。
- *
- * 18ホールでの概算ショット数:
- * - ドライバー ティーショット: ~10回 → 約14%
- * - フェアウェイウッド ティーショット: ~4回 → 約6%
- * - ロングアイアン Par3: ~2回 → 約3%
- * - ミドルアイアン Par3: ~2回 → 約3%
- * - ショートアイアン Par3: ~2回 → 約3%
- * - セカンドショット（ロング）: ~6回 → 約9%
- * - セカンドショット（ミドル）: ~10回 → 約14%
- * - セカンドショット（ショート）: ~8回 → 約11%
- * - サードショット（Par5）: ~3回 → 約4%
- * - レイアップショット: ~3回 → 約4%
- * - アプローチ（ピッチショット）: ~8回 → 約11%
- * - アプローチ（チップショット）: ~8回 → 約11%
- * - アプローチ（ランニング）: ~5回 → 約7%
- * 合計: ~71回
+ * 距離帯: 10→30→50→100→150→200→250yd（MECE・隙間なし・重複なし）
+ * MAX飛距離設定に応じて比例スケールされる。
  */
 export const targetTemplates: TargetTemplate[] = [
   {
-    name: 'ドライバー ティーショット',
+    name: 'ロングショット',
     distanceMin: 200,
     distanceMax: 250,
     depthOk: 30,
     widthOk: 30,
-    weight: 14,
+    weight: 20,
   },
   {
-    name: 'フェアウェイウッド ティーショット',
-    distanceMin: 180,
-    distanceMax: 220,
-    depthOk: 25,
-    widthOk: 25,
-    weight: 6,
-  },
-  {
-    name: 'ロングアイアン Par3 ティーショット',
-    distanceMin: 170,
-    distanceMax: 200,
-    depthOk: 15,
-    widthOk: 20,
-    weight: 3,
-  },
-  {
-    name: 'ミドルアイアン Par3 ティーショット',
-    distanceMin: 140,
-    distanceMax: 170,
-    depthOk: 12,
-    widthOk: 18,
-    weight: 3,
-  },
-  {
-    name: 'ショートアイアン Par3 ティーショット',
-    distanceMin: 100,
-    distanceMax: 140,
-    depthOk: 10,
-    widthOk: 15,
-    weight: 3,
-  },
-  {
-    name: 'セカンドショット（ロング）',
+    name: 'ミドルショット（長）',
     distanceMin: 150,
     distanceMax: 200,
-    depthOk: 20,
+    depthOk: 18,
     widthOk: 20,
-    weight: 9,
+    weight: 25,
   },
   {
-    name: 'セカンドショット（ミドル）',
+    name: 'ミドルショット（短）',
     distanceMin: 100,
     distanceMax: 150,
-    depthOk: 14,
-    widthOk: 14,
-    weight: 14,
+    depthOk: 12,
+    widthOk: 15,
+    weight: 20,
   },
   {
-    name: 'セカンドショット（ショート）',
+    name: 'ハーフショット',
     distanceMin: 50,
     distanceMax: 100,
-    depthOk: 10,
+    depthOk: 8,
     widthOk: 10,
-    weight: 11,
+    weight: 15,
   },
   {
-    name: 'サードショット（Par5）',
-    distanceMin: 80,
-    distanceMax: 140,
-    depthOk: 12,
-    widthOk: 12,
-    weight: 4,
-  },
-  {
-    name: 'レイアップショット',
-    distanceMin: 100,
-    distanceMax: 180,
-    depthOk: 20,
-    widthOk: 25,
-    weight: 4,
-  },
-  {
-    name: 'アプローチ（ピッチショット）',
+    name: 'アプローチ（ピッチ）',
     distanceMin: 30,
-    distanceMax: 60,
+    distanceMax: 50,
     depthOk: 5,
     widthOk: 8,
-    weight: 11,
+    weight: 10,
   },
   {
-    name: 'アプローチ（チップショット）',
+    name: 'アプローチ（チップ&ラン）',
     distanceMin: 10,
     distanceMax: 30,
     depthOk: 3,
     widthOk: 5,
-    weight: 11,
-  },
-  {
-    name: 'アプローチ（ランニング）',
-    distanceMin: 10,
-    distanceMax: 20,
-    depthOk: 3,
-    widthOk: 5,
-    weight: 7,
+    weight: 10,
   },
 ]

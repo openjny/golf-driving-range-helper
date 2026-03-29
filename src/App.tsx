@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel } from './types'
 import { DEFAULT_MAX_DISTANCE, STRICTNESS_LABELS } from './types'
-import { generateRandomTarget, computeStats } from './logic'
+import { generateRandomTarget, computeStats, getScaledDistanceRanges } from './logic'
 import './App.css'
 
 type AppView = 'welcome' | 'target' | 'last-shot-prompt' | 'stats'
@@ -14,6 +14,7 @@ function App() {
   const [maxDistance, setMaxDistance] = useState(DEFAULT_MAX_DISTANCE)
   const [strictness, setStrictness] = useState<StrictnessLevel>('normal')
   const [showSettings, setShowSettings] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const [stats, setStats] = useState<SessionStats | null>(null)
 
   const handleStart = () => {
@@ -74,8 +75,18 @@ function App() {
       <main className="app-main">
         {view === 'target' && target && (
           <div className="target-card" data-testid="target-card">
-            <div className="shot-counter">
-              {shotCount}球目
+            <div className="target-card-header">
+              <div className="shot-counter">
+                {shotCount}球目
+              </div>
+              <button
+                className="btn-help"
+                onClick={() => setShowHelp(true)}
+                data-testid="help-button"
+                aria-label="ヘルプ"
+              >
+                ❓
+              </button>
             </div>
 
             <h2 className="target-name" data-testid="target-name">
@@ -289,6 +300,70 @@ function App() {
             <p className="settings-hint">
               OKゾーンの広さを調整します。「ゆるい」で広く、「とてもシビア」で狭くなります。
             </p>
+
+            <div className="settings-distance-preview" data-testid="distance-preview">
+              <h4 className="settings-subtitle">距離帯プレビュー</h4>
+              <table className="distance-table">
+                <thead>
+                  <tr>
+                    <th>ターゲット</th>
+                    <th>距離</th>
+                    <th>頻度</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getScaledDistanceRanges(maxDistance).map((range) => (
+                    <tr key={range.name}>
+                      <td>{range.name}</td>
+                      <td>{range.distanceMin}-{range.distanceMax}yd</td>
+                      <td>{range.percentage}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {showHelp && (
+          <div className="modal-overlay" data-testid="help-modal" onClick={() => setShowHelp(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3 className="modal-title">📋 ターゲット一覧</h3>
+                <button
+                  className="modal-close"
+                  onClick={() => setShowHelp(false)}
+                  data-testid="help-close-button"
+                  aria-label="閉じる"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="modal-settings-info">
+                  <span>最大飛距離: <strong>{maxDistance}yd</strong></span>
+                  <span>シビアさ: <strong>{STRICTNESS_LABELS[strictness]}</strong></span>
+                </div>
+                <table className="distance-table">
+                  <thead>
+                    <tr>
+                      <th>ターゲット</th>
+                      <th>距離</th>
+                      <th>頻度</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getScaledDistanceRanges(maxDistance).map((range) => (
+                      <tr key={range.name}>
+                        <td>{range.name}</td>
+                        <td>{range.distanceMin}-{range.distanceMax}yd</td>
+                        <td>{range.percentage}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
       </main>

@@ -1,4 +1,4 @@
-import type { Target, TargetTemplate, TargetCategory, ShotResult, SessionStats } from './types'
+import type { Target, TargetTemplate, TargetCategory, ShotResult, SessionStats, ScaledDistanceRange } from './types'
 import { DEFAULT_MAX_DISTANCE, STRICTNESS_MULTIPLIERS } from './types'
 import type { StrictnessLevel } from './types'
 import { targetTemplates } from './targets'
@@ -32,10 +32,27 @@ export function selectTemplate(
  * ターゲット名からカテゴリを判定する（連続防止用）
  */
 export function getTargetCategory(name: string): TargetCategory {
-  if (name.includes('ドライバー')) return 'driver'
-  if (name.includes('ロングアイアン')) return 'long-iron'
+  if (name.includes('ロングショット')) return 'long'
   if (name.includes('アプローチ')) return 'approach'
   return 'other'
+}
+
+/**
+ * テンプレートのスケール後距離帯を計算する
+ */
+export function getScaledDistanceRanges(
+  maxDistance: number = DEFAULT_MAX_DISTANCE,
+  templates: TargetTemplate[] = targetTemplates,
+): ScaledDistanceRange[] {
+  const scale = maxDistance / DEFAULT_MAX_DISTANCE
+  const totalWeight = templates.reduce((sum, t) => sum + t.weight, 0)
+  return templates.map((t) => ({
+    name: t.name,
+    distanceMin: Math.max(10, Math.round((t.distanceMin * scale) / 10) * 10),
+    distanceMax: Math.max(10, Math.round((t.distanceMax * scale) / 10) * 10),
+    weight: t.weight,
+    percentage: Math.round((t.weight / totalWeight) * 100),
+  }))
 }
 
 /**

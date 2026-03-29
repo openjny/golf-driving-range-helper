@@ -192,4 +192,30 @@ describe('App', () => {
     fireEvent.change(select, { target: { value: 'easy' } })
     expect(select.value).toBe('easy')
   })
+
+  it('設定画面に距離帯プレビューが表示される', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('settings-button'))
+
+    expect(screen.getByTestId('distance-preview')).toBeInTheDocument()
+    expect(screen.getByText('ロングショット')).toBeInTheDocument()
+  })
+
+  it('ターゲット表示中にヘルプボタンが表示される', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('next-button'))
+
+    expect(screen.getByTestId('help-button')).toBeInTheDocument()
+  })
+
+  it('ヘルプボタンでモーダルが表示・非表示される', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('next-button'))
+    fireEvent.click(screen.getByTestId('help-button'))
+
+    expect(screen.getByTestId('help-modal')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('help-close-button'))
+    expect(screen.queryByTestId('help-modal')).not.toBeInTheDocument()
+  })
 })

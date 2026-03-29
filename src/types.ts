@@ -84,4 +84,13 @@ export const STRICTNESS_LABELS: Record<StrictnessLevel, string> = {
 }
 
 /** ターゲットカテゴリ（連続防止用） */
-export type TargetCategory = 'driver' | 'long-iron' | 'approach' | 'other'
+export type TargetCategory = 'long' | 'approach' | 'other'
+
+/** スケール後の距離帯情報 */
+export interface ScaledDistanceRange {
+  name: string
+  distanceMin: number
+  distanceMax: number
+  weight: number
+  percentage: number
+}

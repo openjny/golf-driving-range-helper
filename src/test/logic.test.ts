@@ -5,6 +5,7 @@ import {
   generateRandomTarget,
   getTargetCategory,
   computeStats,
+  getScaledDistanceRanges,
 } from '../logic'
 import { targetTemplates } from '../targets'
 import type { TargetTemplate, ShotResult } from '../types'
@@ -35,14 +36,14 @@ describe('selectTemplate', () => {
     }
   })
 
-  it('ドライバーの出現頻度が20%以下である', () => {
+  it('ロングショットの出現頻度が20%以下である', () => {
     const totalWeight = targetTemplates.reduce((s, t) => s + t.weight, 0)
-    const driverTemplate = targetTemplates.find((t) =>
-      t.name.includes('ドライバー'),
+    const longTemplate = targetTemplates.find((t) =>
+      t.name.includes('ロングショット'),
     )
-    expect(driverTemplate).toBeDefined()
-    const driverRatio = driverTemplate!.weight / totalWeight
-    expect(driverRatio).toBeLessThanOrEqual(0.2)
+    expect(longTemplate).toBeDefined()
+    const longRatio = longTemplate!.weight / totalWeight
+    expect(longRatio).toBeLessThanOrEqual(0.2)
   })
 
   it('アプローチの出現頻度が20%以上である', () => {
@@ -81,15 +82,15 @@ describe('generateTargetFromTemplate', () => {
     }
   })
 
-  it('距離が最大250yを超えない（ドライバー）', () => {
-    const driverTemplate = targetTemplates.find((t) =>
-      t.name.includes('ドライバー'),
+  it('距離が最大250yを超えない（ロングショット）', () => {
+    const longTemplate = targetTemplates.find((t) =>
+      t.name.includes('ロングショット'),
     )
-    expect(driverTemplate).toBeDefined()
-    expect(driverTemplate!.distanceMax).toBeLessThanOrEqual(250)
+    expect(longTemplate).toBeDefined()
+    expect(longTemplate!.distanceMax).toBeLessThanOrEqual(250)
 
     for (let i = 0; i < 100; i++) {
-      const target = generateTargetFromTemplate(driverTemplate!)
+      const target = generateTargetFromTemplate(longTemplate!)
       expect(target.distance).toBeLessThanOrEqual(250)
     }
   })
@@ -287,23 +288,18 @@ describe('computeStats', () => {
 })
 
 describe('getTargetCategory', () => {
-  it('ドライバーをdriver カテゴリと判定する', () => {
-    expect(getTargetCategory('ドライバー ティーショット')).toBe('driver')
-  })
-
-  it('ロングアイアンをlong-iron カテゴリと判定する', () => {
-    expect(getTargetCategory('ロングアイアン Par3 ティーショット')).toBe('long-iron')
+  it('ロングショットをlong カテゴリと判定する', () => {
+    expect(getTargetCategory('ロングショット')).toBe('long')
   })
 
   it('アプローチをapproach カテゴリと判定する', () => {
-    expect(getTargetCategory('アプローチ（ピッチショット）')).toBe('approach')
-    expect(getTargetCategory('アプローチ（チップショット）')).toBe('approach')
-    expect(getTargetCategory('アプローチ（ランニング）')).toBe('approach')
+    expect(getTargetCategory('アプローチ（ピッチ）')).toBe('approach')
+    expect(getTargetCategory('アプローチ（チップ&ラン）')).toBe('approach')
   })
 
   it('その他をother カテゴリと判定する', () => {
-    expect(getTargetCategory('セカンドショット（ミドル）')).toBe('other')
-    expect(getTargetCategory('レイアップショット')).toBe('other')
+    expect(getTargetCategory('ミドルショット（長）')).toBe('other')
+    expect(getTargetCategory('ハーフショット')).toBe('other')
   })
 })
 
@@ -354,18 +350,18 @@ describe('generateTargetFromTemplate with strictness', () => {
 })
 
 describe('generateRandomTarget with consecutive prevention', () => {
-  it('ドライバー連続を防ぐ（統計的テスト）', () => {
+  it('ロングショット連続を防ぐ（統計的テスト）', () => {
     let consecutiveCount = 0
     const iterations = 500
 
     for (let i = 0; i < iterations; i++) {
-      const target = generateRandomTarget(250, 'normal', 'ドライバー ティーショット')
-      if (getTargetCategory(target.name) === 'driver') {
+      const target = generateRandomTarget(250, 'normal', 'ロングショット')
+      if (getTargetCategory(target.name) === 'long') {
         consecutiveCount++
       }
     }
 
-    // 連続防止が機能していれば、ドライバーはほぼ出ない
+    // 連続防止が機能していれば、ロングショットはほぼ出ない
     expect(consecutiveCount / iterations).toBeLessThan(0.05)
   })
 
@@ -374,7 +370,7 @@ describe('generateRandomTarget with consecutive prevention', () => {
     const iterations = 500
 
     for (let i = 0; i < iterations; i++) {
-      const target = generateRandomTarget(250, 'normal', 'アプローチ（ピッチショット）')
+      const target = generateRandomTarget(250, 'normal', 'アプローチ（ピッチ）')
       if (getTargetCategory(target.name) === 'approach') {
         consecutiveCount++
       }
@@ -388,7 +384,7 @@ describe('generateRandomTarget with consecutive prevention', () => {
     const iterations = 500
 
     for (let i = 0; i < iterations; i++) {
-      const target = generateRandomTarget(250, 'normal', 'セカンドショット（ミドル）')
+      const target = generateRandomTarget(250, 'normal', 'ミドルショット（長）')
       if (getTargetCategory(target.name) === 'other') {
         otherCount++
       }
@@ -402,5 +398,44 @@ describe('generateRandomTarget with consecutive prevention', () => {
     const target = generateRandomTarget(250, 'normal')
     expect(target).toBeDefined()
     expect(target.name).toBeTruthy()
+  })
+})
+
+describe('getScaledDistanceRanges', () => {
+  it('デフォルト(250yd)でスケールなし', () => {
+    const ranges = getScaledDistanceRanges(250)
+    const longShot = ranges.find((r) => r.name === 'ロングショット')
+    expect(longShot).toBeDefined()
+    expect(longShot!.distanceMin).toBe(200)
+    expect(longShot!.distanceMax).toBe(250)
+  })
+
+  it('180ydでスケールされる', () => {
+    const ranges = getScaledDistanceRanges(180)
+    const longShot = ranges.find((r) => r.name === 'ロングショット')
+    expect(longShot).toBeDefined()
+    // 200 * 180/250 = 144 → 140, 250 * 180/250 = 180
+    expect(longShot!.distanceMin).toBe(140)
+    expect(longShot!.distanceMax).toBe(180)
+  })
+
+  it('全テンプレートの距離帯を返す', () => {
+    const ranges = getScaledDistanceRanges()
+    expect(ranges).toHaveLength(targetTemplates.length)
+  })
+
+  it('出現率の合計が100%前後になる', () => {
+    const ranges = getScaledDistanceRanges()
+    const totalPercentage = ranges.reduce((s, r) => s + r.percentage, 0)
+    expect(totalPercentage).toBeGreaterThanOrEqual(98)
+    expect(totalPercentage).toBeLessThanOrEqual(102)
+  })
+
+  it('距離が最小10ydを保つ', () => {
+    const ranges = getScaledDistanceRanges(50)
+    for (const r of ranges) {
+      expect(r.distanceMin).toBeGreaterThanOrEqual(10)
+      expect(r.distanceMax).toBeGreaterThanOrEqual(10)
+    }
   })
 })
