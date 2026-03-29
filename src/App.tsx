@@ -64,7 +64,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>⛳ ターゲット練習</h1>
-        <p className="subtitle">ランダムターゲットで実戦的な練習を</p>
+        <p className="subtitle">ランダムなターゲット距離とゾーンにキャリーさせよう</p>
       </header>
 
       <main className="app-main">
@@ -120,7 +120,6 @@ function App() {
               </div>
             </div>
           </div>
-          <p className="target-basis">キャリー基準</p>
           </>
         )}
 
