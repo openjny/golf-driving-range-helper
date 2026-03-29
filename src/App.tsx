@@ -76,7 +76,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>⛳ ターゲット練習</h1>
-        <p className="subtitle">ランダムなターゲット距離（ゾーン）にキャリーさせよう</p>
+        <p className="subtitle">ランダムに設定される距離（ゾーン）にキャリーさせよう</p>
       </header>
 
       <main className="app-main">
@@ -182,7 +182,6 @@ function App() {
 
             {stats.scenarioStats.length > 0 && (
               <div className="stats-scenarios" data-testid="stats-scenarios">
-                <h3 className="stats-scenario-title">場面別</h3>
                 <table className="stats-scenario-table">
                   <thead>
                     <tr>
