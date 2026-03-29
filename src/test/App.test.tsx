@@ -148,12 +148,12 @@ describe('App', () => {
     expect(screen.getByText('yd')).toBeInTheDocument()
   })
 
-  it('ターゲットゾーンが視覚的に表示される', () => {
+  it('ターゲットゾーンが楕円で表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     expect(screen.getByTestId('target-zone')).toBeInTheDocument()
-    expect(screen.getByText('↔')).toBeInTheDocument()
-    expect(screen.getByText('↕')).toBeInTheDocument()
+    expect(screen.getByTestId('target-depth')).toBeInTheDocument()
+    expect(screen.getByTestId('target-width')).toBeInTheDocument()
   })
 
   it('初期画面に設定パネルが常時表示される', () => {
@@ -175,7 +175,7 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByTestId('strictness-select')).toBeInTheDocument()
-    expect(screen.getByText('ゆるい')).toBeInTheDocument()
+    expect(screen.getByText('ゆるめ')).toBeInTheDocument()
     expect(screen.getByText('ふつう')).toBeInTheDocument()
     expect(screen.getByText('シビア')).toBeInTheDocument()
   })

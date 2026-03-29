@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel, DistanceProfileId } from './types'
-import { DEFAULT_PROFILE_ID, STRICTNESS_LABELS } from './types'
+import { DEFAULT_PROFILE_ID, STRICTNESS_LABELS, STRICTNESS_DESCRIPTIONS } from './types'
 import { distanceProfiles } from './targets'
 import { generateRandomTarget, getProfile, getDistanceRangeInfo, computeStats } from './logic'
 import './App.css'
@@ -89,21 +89,22 @@ function App() {
             </h2>
 
             <div className="target-zone" data-testid="target-zone">
-              <div className="target-zone-main">
-                <div className="target-zone-box">
+              <div className="ellipse-far" data-testid="target-depth">
+                {target.distance + target.depthOk}yd
+              </div>
+              <div className="ellipse-container">
+                <div className="ellipse-shape" style={{
+                  aspectRatio: `${target.widthOk} / ${target.depthOk}`,
+                }}>
                   <div className="target-distance" data-testid="target-distance">
                     <span className="distance-value">{target.distance}</span>
                     <span className="distance-unit">yd</span>
                   </div>
                 </div>
-                <div className="target-zone-depth" data-testid="target-depth">
-                  <span className="zone-arrow zone-arrow-depth">↕</span>
-                  <span className="zone-value">±{target.depthOk}yd</span>
-                </div>
+                <div className="ellipse-width-label" data-testid="target-width">左右{target.widthOk}yd</div>
               </div>
-              <div className="target-zone-width" data-testid="target-width">
-                <span className="zone-arrow zone-arrow-width">↔</span>
-                <span className="zone-value">±{target.widthOk}yd</span>
+              <div className="ellipse-near">
+                {target.distance - target.depthOk}yd
               </div>
             </div>
           </div>
@@ -206,7 +207,8 @@ function App() {
                       onClick={() => setStrictness(value)}
                       data-testid={`strictness-${value}`}
                     >
-                      {label}
+                      <span className="strictness-card-label">{label}</span>
+                      <span className="strictness-card-desc">{STRICTNESS_DESCRIPTIONS[value]}</span>
                     </button>
                   ),
                 )}
@@ -220,8 +222,8 @@ function App() {
                   <tr>
                     <th>ターゲット</th>
                     <th>距離</th>
-                    <th>縦±</th>
-                    <th>横±</th>
+                    <th>縦</th>
+                    <th>横</th>
                     <th>頻度</th>
                   </tr>
                 </thead>
@@ -320,8 +322,8 @@ function App() {
                     <tr>
                       <th>ターゲット</th>
                       <th>距離</th>
-                      <th>縦±</th>
-                      <th>横±</th>
+                      <th>縦</th>
+                      <th>横</th>
                       <th>頻度</th>
                     </tr>
                   </thead>

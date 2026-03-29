@@ -97,9 +97,16 @@ export const STRICTNESS_OFFSETS: Record<StrictnessLevel, number> = {
 
 /** シビアさレベルの表示名 */
 export const STRICTNESS_LABELS: Record<StrictnessLevel, string> = {
-  easy: 'ゆるい',
+  easy: 'ゆるめ',
   normal: 'ふつう',
   strict: 'シビア',
+}
+
+/** シビアさレベルの説明 */
+export const STRICTNESS_DESCRIPTIONS: Record<StrictnessLevel, string> = {
+  easy: 'OKゾーン広め',
+  normal: '標準',
+  strict: 'OKゾーン狭め',
 }
 
 /** ターゲットカテゴリ（連続防止用） */

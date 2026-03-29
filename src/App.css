@@ -132,54 +132,47 @@
   vertical-align: baseline;
 }
 
-/* Details */
+/* Details - Ellipse zone */
 .target-zone {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  margin-top: 4px;
 }
 
-.target-zone-main {
+.ellipse-far,
+.ellipse-near {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-mid);
+}
+
+.ellipse-container {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.target-zone-box {
-  border: 3px dashed var(--green-mid);
-  border-radius: 12px;
-  padding: 12px 32px;
-  background: var(--green-bg);
-}
-
-.target-zone-depth {
+.ellipse-shape {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  color: var(--green-dark);
+  justify-content: center;
+  width: 180px;
+  max-height: 240px;
+  min-height: 120px;
+  border: 3px dashed var(--green-mid);
+  border-radius: 50%;
+  background: var(--green-bg);
 }
 
-.target-zone-width {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--green-dark);
-}
-
-.zone-arrow {
-  font-weight: 700;
-}
-
-.zone-arrow-depth,
-.zone-arrow-width {
-  font-size: 1.4rem;
-}
-
-.zone-value {
-  font-size: 0.85rem;
+.ellipse-width-label {
+  font-size: 0.8rem;
   font-weight: 600;
+  color: var(--green-dark);
+  white-space: nowrap;
 }
 
 /* Buttons */
@@ -499,15 +492,28 @@
 }
 
 .strictness-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   padding: 10px 4px;
   border: 2px solid var(--gray-light);
   border-radius: 10px;
   background: var(--white);
   cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.strictness-card-label {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--gray-dark);
-  transition: border-color 0.2s, background 0.2s;
+}
+
+.strictness-card-desc {
+  font-size: 0.65rem;
+  color: var(--gray-mid);
+}
 }
 
 .strictness-card:hover {
@@ -518,8 +524,11 @@
 .strictness-card--active {
   border-color: var(--green-mid);
   background: var(--green-bg);
-  color: var(--green-dark);
   box-shadow: 0 0 0 1px var(--green-mid);
+}
+
+.strictness-card--active .strictness-card-label {
+  color: var(--green-dark);
 }
 
 /* Footer */
