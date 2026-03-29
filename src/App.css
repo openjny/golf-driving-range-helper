@@ -124,7 +124,7 @@
 .target-distance {
   margin: 0;
   background: var(--green-bg);
-  padding: 0 4px;
+  padding: 0 4px 4px;
   z-index: 2;
   position: relative;
   display: inline-flex;
