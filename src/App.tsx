@@ -98,9 +98,7 @@ function App() {
               <div className="ellipse-far" data-testid="target-depth">
                 {target.distance + target.depthOk} yd
               </div>
-              <div className="ellipse-shape" style={{
-                aspectRatio: `${target.widthOk} / ${target.depthOk}`,
-              }}>
+              <div className="ellipse-shape">
                 <div className="ellipse-axis-h" data-testid="target-width">
                   <span className="axis-label">{target.widthOk} yd</span>
                   <div className="target-distance" data-testid="target-distance">

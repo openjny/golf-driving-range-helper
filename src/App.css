@@ -174,8 +174,7 @@
   justify-content: center;
   width: 100%;
   max-width: 340px;
-  min-height: 120px;
-  max-height: 220px;
+  aspect-ratio: 4 / 3;
   border: 3px dashed var(--green-mid);
   border-radius: 50%;
   background: var(--green-bg);
