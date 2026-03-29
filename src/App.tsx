@@ -14,7 +14,6 @@ function App() {
   const [shotResults, setShotResults] = useState<ShotResult[]>([])
   const [profileId, setProfileId] = useState<DistanceProfileId>(DEFAULT_PROFILE_ID)
   const [strictness, setStrictness] = useState<StrictnessLevel>('normal')
-  const [showSettings, setShowSettings] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [stats, setStats] = useState<SessionStats | null>(null)
 
@@ -178,33 +177,83 @@ function App() {
         )}
 
         {view === 'welcome' && (
-          <div className="welcome-card">
-            <p className="welcome-message">
-              ボタンを押してターゲットを表示しましょう。<br />
-              1球ごとにターゲットを変えて、<br />
-              実戦に近い練習をしましょう。
-            </p>
+          <div className="settings-panel" data-testid="settings-panel">
+            <div className="settings-section">
+              <label className="settings-label">ドライバー飛距離</label>
+              <div className="profile-cards" data-testid="profile-select">
+                {distanceProfiles.map((p) => (
+                  <button
+                    key={p.id}
+                    className={`profile-card${p.id === profileId ? ' profile-card--active' : ''}`}
+                    onClick={() => setProfileId(p.id)}
+                    data-testid={`profile-${p.id}`}
+                  >
+                    <span className="profile-card-distance">{p.maxDistance}yd</span>
+                    <span className="profile-card-desc">{p.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="settings-section">
+              <div className="settings-row">
+                <label className="settings-label" htmlFor="strictness">
+                  シビアさ
+                </label>
+                <select
+                  id="strictness"
+                  className="settings-select"
+                  value={strictness}
+                  onChange={(e) => setStrictness(e.target.value as StrictnessLevel)}
+                  data-testid="strictness-select"
+                >
+                  {(Object.entries(STRICTNESS_LABELS) as [StrictnessLevel, string][]).map(
+                    ([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </div>
+              <p className="settings-hint">
+                OKゾーンの広さを調整します。「ゆるい」で広く、「とてもシビア」で狭くなります。
+              </p>
+            </div>
+
+            <div className="settings-distance-preview" data-testid="distance-preview">
+              <h4 className="settings-subtitle">距離帯プレビュー</h4>
+              <table className="distance-table">
+                <thead>
+                  <tr>
+                    <th>ターゲット</th>
+                    <th>距離</th>
+                    <th>頻度</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getDistanceRangeInfo(profile).map((range) => (
+                    <tr key={range.name}>
+                      <td>{range.name}</td>
+                      <td>{range.distanceMin}-{range.distanceMax}yd</td>
+                      <td>{range.percentage}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         <div className="button-group">
           {view === 'welcome' && (
-            <>
-              <button
-                className="btn btn-primary"
-                onClick={handleStart}
-                data-testid="next-button"
-              >
-                スタート
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setShowSettings(!showSettings)}
-                data-testid="settings-button"
-              >
-                ⚙️ 設定
-              </button>
-            </>
+            <button
+              className="btn btn-primary"
+              onClick={handleStart}
+              data-testid="next-button"
+            >
+              スタート
+            </button>
           )}
           {view === 'target' && (
             <>
@@ -250,75 +299,6 @@ function App() {
             </button>
           )}
         </div>
-
-        {showSettings && view === 'welcome' && (
-          <div className="settings-panel" data-testid="settings-panel">
-            <h3 className="settings-title">⚙️ 設定</h3>
-            <div className="settings-row">
-              <label className="settings-label" htmlFor="profile">
-                飛距離プロフィール
-              </label>
-            </div>
-            <div className="profile-cards" data-testid="profile-select">
-              {distanceProfiles.map((p) => (
-                <button
-                  key={p.id}
-                  className={`profile-card${p.id === profileId ? ' profile-card--active' : ''}`}
-                  onClick={() => setProfileId(p.id)}
-                  data-testid={`profile-${p.id}`}
-                >
-                  <span className="profile-card-distance">{p.maxDistance}yd</span>
-                  <span className="profile-card-desc">{p.description}</span>
-                </button>
-              ))}
-            </div>
-            <div className="settings-row">
-              <label className="settings-label" htmlFor="strictness">
-                シビアさ
-              </label>
-              <select
-                id="strictness"
-                className="settings-select"
-                value={strictness}
-                onChange={(e) => setStrictness(e.target.value as StrictnessLevel)}
-                data-testid="strictness-select"
-              >
-                {(Object.entries(STRICTNESS_LABELS) as [StrictnessLevel, string][]).map(
-                  ([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ),
-                )}
-              </select>
-            </div>
-            <p className="settings-hint">
-              OKゾーンの広さを調整します。「ゆるい」で広く、「とてもシビア」で狭くなります。
-            </p>
-
-            <div className="settings-distance-preview" data-testid="distance-preview">
-              <h4 className="settings-subtitle">距離帯プレビュー</h4>
-              <table className="distance-table">
-                <thead>
-                  <tr>
-                    <th>ターゲット</th>
-                    <th>距離</th>
-                    <th>頻度</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getDistanceRangeInfo(profile).map((range) => (
-                    <tr key={range.name}>
-                      <td>{range.name}</td>
-                      <td>{range.distanceMin}-{range.distanceMax}yd</td>
-                      <td>{range.percentage}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
 
         {showHelp && (
           <div className="modal-overlay" data-testid="help-modal" onClick={() => setShowHelp(false)}>

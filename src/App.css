@@ -404,10 +404,12 @@
   animation: fadeIn 0.3s ease-out;
 }
 
-.settings-title {
-  font-size: 1rem;
-  color: var(--green-dark);
-  margin-bottom: 12px;
+.settings-section {
+  margin-bottom: 16px;
+}
+
+.settings-section:last-of-type {
+  margin-bottom: 0;
 }
 
 .settings-row {

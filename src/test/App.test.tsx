@@ -8,9 +8,9 @@ describe('App', () => {
     expect(screen.getByTestId('next-button')).toHaveTextContent('スタート')
   })
 
-  it('ウェルカムメッセージが表示される', () => {
+  it('初期画面にドライバー飛距離ラベルが表示される', () => {
     render(<App />)
-    expect(screen.getByText(/ボタンを押してターゲットを表示しましょう/)).toBeInTheDocument()
+    expect(screen.getByText(/ドライバー飛距離/)).toBeInTheDocument()
   })
 
   it('スタートボタンを押すとターゲットカードが表示される', () => {
@@ -156,9 +156,8 @@ describe('App', () => {
     expect(screen.getByText('↕')).toBeInTheDocument()
   })
 
-  it('設定ボタンを押すと設定パネルが表示される', () => {
+  it('初期画面に設定パネルが常時表示される', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
     expect(screen.getByTestId('settings-panel')).toBeInTheDocument()
     expect(screen.getByTestId('profile-select')).toBeInTheDocument()
@@ -166,7 +165,6 @@ describe('App', () => {
 
   it('プロフィールを選択できる', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
     const profileBtn = screen.getByTestId('profile-d180')
     fireEvent.click(profileBtn)
@@ -175,7 +173,6 @@ describe('App', () => {
 
   it('シビアさの設定が表示される', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
     expect(screen.getByTestId('strictness-select')).toBeInTheDocument()
     expect(screen.getByText('ゆるい')).toBeInTheDocument()
@@ -186,7 +183,6 @@ describe('App', () => {
 
   it('シビアさの設定を変更できる', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
     const select = screen.getByTestId('strictness-select') as HTMLSelectElement
     fireEvent.change(select, { target: { value: 'easy' } })
@@ -195,7 +191,6 @@ describe('App', () => {
 
   it('設定画面に距離帯プレビューが表示される', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
     expect(screen.getByTestId('distance-preview')).toBeInTheDocument()
     expect(screen.getByText('ロングショット')).toBeInTheDocument()
