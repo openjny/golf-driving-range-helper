@@ -1,4 +1,4 @@
-import type { Target, TargetTemplate } from './types'
+import type { DepthHint, Target, TargetTemplate } from './types'
 import { targetTemplates } from './targets'
 
 /**
@@ -27,6 +27,20 @@ export function selectTemplate(
 }
 
 /**
+ * テンプレートの確率に基づいて前後の攻め方ヒントを生成する
+ */
+export function generateDepthHint(template: TargetTemplate): DepthHint {
+  const rand = Math.random()
+  if (rand < template.shortSideHintChance) {
+    return 'short'
+  }
+  if (rand < template.shortSideHintChance + template.longSideHintChance) {
+    return 'long'
+  }
+  return null
+}
+
+/**
  * ターゲットテンプレートから具体的なターゲットを生成する
  */
 export function generateTargetFromTemplate(template: TargetTemplate): Target {
@@ -41,6 +55,7 @@ export function generateTargetFromTemplate(template: TargetTemplate): Target {
     widthOk: template.widthOk,
     obLeft: Math.random() < template.obLeftChance,
     obRight: Math.random() < template.obRightChance,
+    depthHint: generateDepthHint(template),
   }
 }
 
