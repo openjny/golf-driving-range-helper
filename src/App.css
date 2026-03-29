@@ -416,6 +416,7 @@
   color: var(--gray-mid);
   margin-bottom: 12px;
   font-weight: 600;
+  text-align: center;
 }
 
 .stats-scenario-table {
@@ -433,7 +434,7 @@
 }
 
 .stats-scenario-table th:last-child {
-  text-align: right;
+  text-align: left;
 }
 
 .stats-scenario-table td {
@@ -442,7 +443,6 @@
 }
 
 .stats-scenario-table td:last-child {
-  text-align: right;
   font-weight: 700;
   white-space: nowrap;
 }
