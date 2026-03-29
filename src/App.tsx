@@ -97,26 +97,26 @@ function App() {
 
             <div className="target-zone" data-testid="target-zone">
               <div className="ellipse-far" data-testid="target-depth">
-                {target.distance + target.depthOk}yd
+                {target.distance + target.depthOk} yd
               </div>
               <div className="ellipse-shape" style={{
                 aspectRatio: `${target.widthOk} / ${target.depthOk}`,
               }}>
                 <div className="ellipse-axis-h" data-testid="target-width">
-                  <span className="axis-label">{target.widthOk}yd</span>
+                  <span className="axis-label">{target.widthOk} yd</span>
                   <div className="target-distance" data-testid="target-distance">
                     <span className="distance-value">{target.distance}</span>
                     <span className="distance-unit">yd</span>
                   </div>
-                  <span className="axis-label">{target.widthOk}yd</span>
+                  <span className="axis-label">{target.widthOk} yd</span>
                 </div>
                 <div className="ellipse-axis-v">
-                  <span className="axis-label-v">{target.depthOk}yd</span>
-                  <span className="axis-label-v">{target.depthOk}yd</span>
+                  <span className="axis-label-v">{target.depthOk} yd</span>
+                  <span className="axis-label-v">{target.depthOk} yd</span>
                 </div>
               </div>
               <div className="ellipse-near">
-                {target.distance - target.depthOk}yd
+                {target.distance - target.depthOk} yd
               </div>
             </div>
           </div>
@@ -203,7 +203,7 @@ function App() {
                     onClick={() => setProfileId(p.id)}
                     data-testid={`profile-${p.id}`}
                   >
-                    <span className="profile-card-distance">{p.maxDistance}yd</span>
+                    <span className="profile-card-distance">{p.maxDistance} yd</span>
                     <span className="profile-card-desc">{p.description}</span>
                   </button>
                 ))}
@@ -248,7 +248,7 @@ function App() {
                       <td>{range.distanceMin}-{range.distanceMax}yd</td>
                       <td>{Math.round(range.depthRatio * 100)}%</td>
                       <td>{Math.round(range.widthRatio * 100)}%</td>
-                      <td>{range.percentage}%</td>
+                      <td>{range.distanceMin}-{range.distanceMax} yd</td>
                     </tr>
                   ))}
                 </tbody>
@@ -319,7 +319,7 @@ function App() {
               </div>
               <div className="modal-body">
                 <div className="modal-settings-info">
-                  <span>プロフィール: <strong>{profile.maxDistance}yd ({profile.description})</strong></span>
+                  <span>プロフィール: <strong>{profile.maxDistance} yd ({profile.description})</strong></span>
                   <span>シビアさ: <strong>{STRICTNESS_LABELS[strictness]}</strong></span>
                 </div>
                 <table className="distance-table">
@@ -336,7 +336,7 @@ function App() {
                     {getDistanceRangeInfo(profile, strictness).map((range) => (
                       <tr key={range.name}>
                         <td>{range.name}</td>
-                        <td>{range.distanceMin}-{range.distanceMax}yd</td>
+                        <td>{range.distanceMin}-{range.distanceMax} yd</td>
                         <td>{Math.round(range.depthRatio * 100)}%</td>
                         <td>{Math.round(range.widthRatio * 100)}%</td>
                         <td>{range.percentage}%</td>
