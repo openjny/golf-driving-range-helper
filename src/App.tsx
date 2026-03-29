@@ -115,7 +115,7 @@ function App() {
                 <div className="ellipse-axis-h" data-testid="target-width">
                   <span className="axis-label"><span className="axis-num">{target.widthOk}</span> yd</span>
                   <div className="target-distance" data-testid="target-distance">
-                    <span className="distance-value">{target.distance}</span>
+                    <span className="distance-value">{target.distance}<span className="distance-unit">yd</span></span>
                   </div>
                   <span className="axis-label"><span className="axis-num">{target.widthOk}</span> yd</span>
                 </div>
