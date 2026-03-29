@@ -140,12 +140,14 @@
 
 .distance-unit {
   font-size: 1.5rem;
-  color: var(--gray-mid);
+  color: var(--green-dark);
   position: absolute;
   left: 100%;
   bottom: 0;
   margin-left: 2px;
   white-space: nowrap;
+  background: var(--green-bg);
+  z-index: 2;
 }
 
 /* Details - Ellipse zone */
