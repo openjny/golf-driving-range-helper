@@ -157,10 +157,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80%;
-  max-width: 240px;
-  max-height: 260px;
+  width: 75%;
+  max-width: 220px;
   min-height: 120px;
+  max-height: 220px;
   border: 3px dashed var(--green-mid);
   border-radius: 50%;
   background: var(--green-bg);

@@ -44,28 +44,28 @@ export const baseTemplates: BaseTemplate[] = [
     distanceMin: 100,
     distanceMax: 150,
     depthRatio: 0.08,   // ミドルアイアン（±7.5% @ 140yd, 典型的アマ ±3.2-5%）
-    widthRatio: 0.06,   // フルスイングで比較的安定
+    widthRatio: 0.07,   // フルスイングで比較的安定
   },
   {
     name: 'ハーフショット',
     distanceMin: 50,
     distanceMax: 100,
     depthRatio: 0.10,   // ウェッジのパーシャルスイング（±9.3% @ 107yd）
-    widthRatio: 0.06,   // 短い分だけ横ブレは小さい
+    widthRatio: 0.07,   // 短い分だけ横ブレは小さい
   },
   {
     name: 'アプローチ（ピッチ）',
     distanceMin: 30,
     distanceMax: 50,
     depthRatio: 0.12,   // コントロールショット: スピン・打ち出し角のバラつき大
-    widthRatio: 0.07,   // 横は比較的安定
+    widthRatio: 0.08,   // 横は比較的安定
   },
   {
     name: 'アプローチ（チップ&ラン）',
     distanceMin: 10,
     distanceMax: 30,
     depthRatio: 0.15,   // 極短距離ではインパクトの微差が縦方向に直結
-    widthRatio: 0.08,   // チップでもフェース向きのブレで左右に散る
+    widthRatio: 0.10,   // チップでもフェース向きのブレで左右に散る
   },
 ]
 
