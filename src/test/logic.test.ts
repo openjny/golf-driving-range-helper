@@ -261,29 +261,31 @@ describe('computeStats', () => {
     expect(stats.totalShots).toBe(0)
     expect(stats.totalSuccess).toBe(0)
     expect(stats.totalMiss).toBe(0)
-    expect(stats.scenarioStats).toHaveLength(0)
+    expect(stats.scenarioStats).toHaveLength(6)
+    expect(stats.scenarioStats.every((s) => s.totalCount === 0)).toBe(true)
   })
 
   it('全成功の結果で正しい統計を返す', () => {
     const results: ShotResult[] = [
       { targetName: 'ロングショット', result: 'success' },
       { targetName: 'ロングショット', result: 'success' },
-      { targetName: 'アプローチ', result: 'success' },
+      { targetName: 'アプローチ（ピッチ）', result: 'success' },
     ]
     const stats = computeStats(results)
     expect(stats.totalShots).toBe(3)
     expect(stats.totalSuccess).toBe(3)
     expect(stats.totalMiss).toBe(0)
-    expect(stats.scenarioStats).toHaveLength(2)
+    expect(stats.scenarioStats).toHaveLength(6)
+    expect(stats.scenarioStats.filter((s) => s.totalCount > 0)).toHaveLength(2)
   })
 
   it('混合結果で正しい統計を返す', () => {
     const results: ShotResult[] = [
       { targetName: 'ロングショット', result: 'success' },
       { targetName: 'ロングショット', result: 'miss' },
-      { targetName: 'アプローチ', result: 'success' },
-      { targetName: 'アプローチ', result: 'miss' },
-      { targetName: 'アプローチ', result: 'success' },
+      { targetName: 'アプローチ（ピッチ）', result: 'success' },
+      { targetName: 'アプローチ（ピッチ）', result: 'miss' },
+      { targetName: 'アプローチ（ピッチ）', result: 'success' },
     ]
     const stats = computeStats(results)
     expect(stats.totalShots).toBe(5)
@@ -296,21 +298,21 @@ describe('computeStats', () => {
     expect(longStat!.missCount).toBe(1)
     expect(longStat!.totalCount).toBe(2)
 
-    const approachStat = stats.scenarioStats.find((s) => s.name === 'アプローチ')
+    const approachStat = stats.scenarioStats.find((s) => s.name === 'アプローチ（ピッチ）')
     expect(approachStat).toBeDefined()
     expect(approachStat!.successCount).toBe(2)
     expect(approachStat!.missCount).toBe(1)
     expect(approachStat!.totalCount).toBe(3)
   })
 
-  it('場面ごとの統計が結果の順序を保持する', () => {
+  it('場面ごとの統計がテンプレート順（ドライバーから）で返る', () => {
     const results: ShotResult[] = [
-      { targetName: 'アプローチ', result: 'success' },
+      { targetName: 'アプローチ（ピッチ）', result: 'success' },
       { targetName: 'ロングショット', result: 'miss' },
     ]
     const stats = computeStats(results)
-    expect(stats.scenarioStats[0].name).toBe('アプローチ')
-    expect(stats.scenarioStats[1].name).toBe('ロングショット')
+    expect(stats.scenarioStats[0].name).toBe('ロングショット')
+    expect(stats.scenarioStats[4].name).toBe('アプローチ（ピッチ）')
   })
 })
 

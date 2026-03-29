@@ -184,16 +184,21 @@ function App() {
               <div className="stats-scenarios" data-testid="stats-scenarios">
                 <h3 className="stats-scenario-title">場面別</h3>
                 {stats.scenarioStats.map((scenario) => {
-                  const pct = Math.round((scenario.successCount / scenario.totalCount) * 100)
-                  const resultClass = pct >= 70 ? 'result-good' : pct >= 40 ? 'result-ok' : 'result-poor'
+                  const practiced = scenario.totalCount > 0
+                  const pct = practiced ? Math.round((scenario.successCount / scenario.totalCount) * 100) : -1
+                  const resultClass = !practiced ? '' : pct >= 70 ? 'result-good' : pct >= 40 ? 'result-ok' : 'result-poor'
                   return (
-                  <div key={scenario.name} className="stats-scenario-row">
+                  <div key={scenario.name} className={`stats-scenario-row ${resultClass}`}>
                     <span className="stats-scenario-name">{scenario.name}</span>
-                    <span className={`stats-scenario-result ${resultClass}`}>
-                      {pct}%
-                      <span className="stats-scenario-detail">
-                        ({scenario.successCount}/{scenario.totalCount})
-                      </span>
+                    <span className="stats-scenario-result">
+                      {practiced ? (
+                        <>{pct}%
+                        <span className="stats-scenario-detail">
+                          ({scenario.successCount}/{scenario.totalCount})
+                        </span></>
+                      ) : (
+                        <span className="stats-scenario-na">N/A</span>
+                      )}
                     </span>
                   </div>
                   )

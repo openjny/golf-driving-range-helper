@@ -151,12 +151,15 @@ export function computeStats(results: ShotResult[]): SessionStats {
     }
   }
 
-  const scenarioStats = Array.from(scenarioMap.entries()).map(([name, stat]) => ({
-    name,
-    successCount: stat.successCount,
-    missCount: stat.missCount,
-    totalCount: stat.totalCount,
-  }))
+  const scenarioStats = baseTemplates.map((t) => {
+    const stat = scenarioMap.get(t.name)
+    return {
+      name: t.name,
+      successCount: stat?.successCount ?? 0,
+      missCount: stat?.missCount ?? 0,
+      totalCount: stat?.totalCount ?? 0,
+    }
+  })
 
   return { totalSuccess, totalMiss, totalShots, scenarioStats }
 }

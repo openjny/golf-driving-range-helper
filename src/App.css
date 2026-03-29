@@ -423,11 +423,23 @@
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #f0f0f0;
+  color: var(--gray-mid);
+}
+
+.stats-scenario-row.result-good {
+  color: var(--green-dark);
+}
+
+.stats-scenario-row.result-ok {
+  color: var(--gray-dark);
+}
+
+.stats-scenario-row.result-poor {
+  color: var(--red);
 }
 
 .stats-scenario-name {
   font-size: 0.85rem;
-  color: var(--gray-dark);
   text-align: left;
 }
 
@@ -447,6 +459,11 @@
 
 .stats-scenario-result.result-poor {
   color: var(--red);
+}
+
+.stats-scenario-na {
+  color: var(--gray-mid);
+  font-weight: 400;
 }
 
 .stats-scenario-detail {
