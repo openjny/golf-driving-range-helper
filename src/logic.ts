@@ -1,4 +1,4 @@
-import type { DepthHint, Target, TargetTemplate, TargetCategory, ShotResult, SessionStats } from './types'
+import type { DepthHint, Target, TargetTemplate, TargetCategory, HazardDirection, ShotResult, SessionStats } from './types'
 import { DEFAULT_MAX_DISTANCE, STRICTNESS_MULTIPLIERS } from './types'
 import type { StrictnessLevel } from './types'
 import { targetTemplates } from './targets'
@@ -53,6 +53,33 @@ export function getTargetCategory(name: string): TargetCategory {
 }
 
 /**
+ * テンプレートの確率に基づいてハザード方向を生成する（最大2つ）
+ */
+export function generateHazards(template: TargetTemplate): HazardDirection[] {
+  const candidates: { direction: HazardDirection; chance: number }[] = [
+    { direction: 'left', chance: template.hazardLeftChance },
+    { direction: 'right', chance: template.hazardRightChance },
+    { direction: 'long', chance: template.hazardLongChance },
+    { direction: 'short', chance: template.hazardShortChance },
+  ]
+
+  const hazards: HazardDirection[] = []
+  for (const { direction, chance } of candidates) {
+    if (Math.random() < chance) {
+      hazards.push(direction)
+    }
+  }
+
+  // 最大2つまでに制限（ランダムに選択）
+  while (hazards.length > 2) {
+    const removeIndex = Math.floor(Math.random() * hazards.length)
+    hazards.splice(removeIndex, 1)
+  }
+
+  return hazards
+}
+
+/**
  * ターゲットテンプレートから具体的なターゲットを生成する
  */
 export function generateTargetFromTemplate(
@@ -73,8 +100,7 @@ export function generateTargetFromTemplate(
     distance,
     depthOk: Math.max(1, Math.round(template.depthOk * strictnessMultiplier)),
     widthOk: Math.max(1, Math.round(template.widthOk * strictnessMultiplier)),
-    obLeft: Math.random() < template.obLeftChance,
-    obRight: Math.random() < template.obRightChance,
+    hazards: generateHazards(template),
     depthHint: generateDepthHint(template),
   }
 }
@@ -112,17 +138,23 @@ export function generateRandomTarget(
  */
 export function computeStats(results: ShotResult[]): SessionStats {
   const totalShots = results.length
-  const totalSuccess = results.filter((r) => r.success).length
+  const totalSuccess = results.filter((r) => r.result === 'success').length
+  const totalMiss = results.filter((r) => r.result === 'miss').length
+  const totalHazard = results.filter((r) => r.result === 'hazard').length
 
-  const scenarioMap = new Map<string, { successCount: number; totalCount: number }>()
+  const scenarioMap = new Map<string, { successCount: number; missCount: number; hazardCount: number; totalCount: number }>()
   for (const result of results) {
     const existing = scenarioMap.get(result.targetName)
     if (existing) {
       existing.totalCount++
-      if (result.success) existing.successCount++
+      if (result.result === 'success') existing.successCount++
+      else if (result.result === 'miss') existing.missCount++
+      else existing.hazardCount++
     } else {
       scenarioMap.set(result.targetName, {
-        successCount: result.success ? 1 : 0,
+        successCount: result.result === 'success' ? 1 : 0,
+        missCount: result.result === 'miss' ? 1 : 0,
+        hazardCount: result.result === 'hazard' ? 1 : 0,
         totalCount: 1,
       })
     }
@@ -131,8 +163,10 @@ export function computeStats(results: ShotResult[]): SessionStats {
   const scenarioStats = Array.from(scenarioMap.entries()).map(([name, stat]) => ({
     name,
     successCount: stat.successCount,
+    missCount: stat.missCount,
+    hazardCount: stat.hazardCount,
     totalCount: stat.totalCount,
   }))
 
-  return { totalSuccess, totalShots, scenarioStats }
+  return { totalSuccess, totalMiss, totalHazard, totalShots, scenarioStats }
 }
