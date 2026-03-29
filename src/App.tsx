@@ -113,15 +113,15 @@ function App() {
               </div>
               <div className="ellipse-shape">
                 <div className="ellipse-axis-h" data-testid="target-width">
-                  <span className="axis-label">{target.widthOk} yd</span>
+                  <span className="axis-label"><span className="axis-num">{target.widthOk}</span> yd</span>
                   <div className="target-distance" data-testid="target-distance">
                     <span className="distance-value">{target.distance}</span>
                   </div>
-                  <span className="axis-label">{target.widthOk} yd</span>
+                  <span className="axis-label"><span className="axis-num">{target.widthOk}</span> yd</span>
                 </div>
                 <div className="ellipse-axis-v">
-                  <span className="axis-label-v">{target.depthOk} yd</span>
-                  <span className="axis-label-v">{target.depthOk} yd</span>
+                  <span className="axis-label-v"><span className="axis-num">{target.depthOk}</span> yd</span>
+                  <span className="axis-label-v"><span className="axis-num">{target.depthOk}</span> yd</span>
                 </div>
               </div>
               <div className="ellipse-near">

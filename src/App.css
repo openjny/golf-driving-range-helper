@@ -228,6 +228,10 @@
   white-space: nowrap;
 }
 
+.axis-num {
+  font-size: 0.95rem;
+}
+
 /* Buttons */
 .button-group {
   display: flex;
@@ -606,7 +610,6 @@
 .strictness-card-desc {
   font-size: 0.65rem;
   color: var(--gray-mid);
-}
 }
 
 .strictness-card:hover {
