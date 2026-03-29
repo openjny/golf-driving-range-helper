@@ -148,10 +148,7 @@
   font-weight: 700;
 }
 
-.zone-arrow-depth {
-  font-size: 1.4rem;
-}
-
+.zone-arrow-depth,
 .zone-arrow-width {
   font-size: 1.4rem;
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel } from './types'
+import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel, HazardDirection } from './types'
 import { DEFAULT_MAX_DISTANCE, STRICTNESS_LABELS } from './types'
 import { generateRandomTarget, computeStats } from './logic'
 import './App.css'
@@ -67,8 +67,8 @@ function App() {
     }
   }
 
-  const hasHazard = (direction: string) =>
-    target?.hazards.includes(direction as 'left' | 'right' | 'long' | 'short') ?? false
+  const hasHazard = (direction: HazardDirection) =>
+    target?.hazards.includes(direction) ?? false
 
   return (
     <div className="app">
