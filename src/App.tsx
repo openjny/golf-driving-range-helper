@@ -183,26 +183,38 @@ function App() {
             {stats.scenarioStats.length > 0 && (
               <div className="stats-scenarios" data-testid="stats-scenarios">
                 <h3 className="stats-scenario-title">場面別</h3>
-                {stats.scenarioStats.map((scenario) => {
+                <table className="stats-scenario-table">
+                  <thead>
+                    <tr>
+                      <th>ショット</th>
+                      <th>距離</th>
+                      <th>成功率</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                {(() => {
+                  const rangeInfo = getDistanceRangeInfo(profile, strictness)
+                  return stats.scenarioStats.map((scenario) => {
                   const practiced = scenario.totalCount > 0
                   const pct = practiced ? Math.round((scenario.successCount / scenario.totalCount) * 100) : -1
                   const resultClass = !practiced ? '' : pct >= 70 ? 'result-good' : pct >= 40 ? 'result-ok' : 'result-poor'
+                  const range = rangeInfo.find((r) => r.name === scenario.name)
                   return (
-                  <div key={scenario.name} className={`stats-scenario-row ${resultClass}`}>
-                    <span className="stats-scenario-name">{scenario.name}</span>
-                    <span className="stats-scenario-result">
+                  <tr key={scenario.name} className={resultClass}>
+                    <td>{scenario.name}</td>
+                    <td>{range ? `${range.distanceMin}-${range.distanceMax} yd` : ''}</td>
+                    <td>
                       {practiced ? (
-                        <>{pct}%
-                        <span className="stats-scenario-detail">
-                          ({scenario.successCount}/{scenario.totalCount})
-                        </span></>
+                        <>{pct}% <span className="stats-scenario-detail">({scenario.successCount}/{scenario.totalCount})</span></>
                       ) : (
                         <span className="stats-scenario-na">N/A</span>
                       )}
-                    </span>
-                  </div>
+                    </td>
+                  </tr>
                   )
-                })}
+                })})()}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

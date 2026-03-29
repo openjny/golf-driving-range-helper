@@ -417,47 +417,48 @@
   font-weight: 600;
 }
 
-.stats-scenario-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
-  color: var(--gray-mid);
-}
-
-.stats-scenario-row.result-good {
-  color: var(--green-dark);
-}
-
-.stats-scenario-row.result-ok {
-  color: var(--gray-dark);
-}
-
-.stats-scenario-row.result-poor {
-  color: var(--red);
-}
-
-.stats-scenario-name {
+.stats-scenario-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 0.85rem;
+}
+
+.stats-scenario-table th {
+  font-weight: 600;
+  color: var(--gray-mid);
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid var(--gray-light);
   text-align: left;
 }
 
-.stats-scenario-result {
-  font-size: 0.95rem;
+.stats-scenario-table th:last-child {
+  text-align: right;
+}
+
+.stats-scenario-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stats-scenario-table td:last-child {
+  text-align: right;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.stats-scenario-result.result-good {
+.stats-scenario-table tr {
+  color: var(--gray-mid);
+}
+
+.stats-scenario-table tr.result-good {
   color: var(--green-dark);
 }
 
-.stats-scenario-result.result-ok {
+.stats-scenario-table tr.result-ok {
   color: var(--gray-dark);
 }
 
-.stats-scenario-result.result-poor {
+.stats-scenario-table tr.result-poor {
   color: var(--red);
 }
 
