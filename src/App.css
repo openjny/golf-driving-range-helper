@@ -442,6 +442,12 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+.stats-scenario-emoji {
+  width: 1.2em;
+  padding-right: 0 !important;
+  text-align: center;
+}
+
 .stats-scenario-table td:last-child {
   font-weight: 700;
   white-space: nowrap;

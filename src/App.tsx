@@ -186,6 +186,7 @@ function App() {
                 <table className="stats-scenario-table">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>ショット</th>
                       <th>距離</th>
                       <th>成功率</th>
@@ -201,6 +202,7 @@ function App() {
                   const range = rangeInfo.find((r) => r.name === scenario.name)
                   return (
                   <tr key={scenario.name} className={resultClass}>
+                    <td className="stats-scenario-emoji">{!practiced ? '' : pct >= 70 ? '💪' : pct >= 40 ? '' : '🔥'}</td>
                     <td>{scenario.name}</td>
                     <td>{range ? `${range.distanceMin}-${range.distanceMax} yd` : ''}</td>
                     <td>
