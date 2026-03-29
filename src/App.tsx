@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import type { Target, ShotResult, SessionStats } from './types'
-import { DEFAULT_MAX_DISTANCE } from './types'
+import type { Target, ShotResult, SessionStats, StrictnessLevel } from './types'
+import { DEFAULT_MAX_DISTANCE, STRICTNESS_LABELS } from './types'
 import { generateRandomTarget, computeStats } from './logic'
 import './App.css'
 
@@ -12,11 +12,12 @@ function App() {
   const [shotCount, setShotCount] = useState(0)
   const [shotResults, setShotResults] = useState<ShotResult[]>([])
   const [maxDistance, setMaxDistance] = useState(DEFAULT_MAX_DISTANCE)
+  const [strictness, setStrictness] = useState<StrictnessLevel>('normal')
   const [showSettings, setShowSettings] = useState(false)
   const [stats, setStats] = useState<SessionStats | null>(null)
 
   const handleStart = () => {
-    setTarget(generateRandomTarget(maxDistance))
+    setTarget(generateRandomTarget(maxDistance, strictness))
     setShotCount(1)
     setView('target')
   }
@@ -25,7 +26,7 @@ function App() {
     if (target) {
       setShotResults((prev) => [...prev, { targetName: target.name, success }])
     }
-    setTarget(generateRandomTarget(maxDistance))
+    setTarget(generateRandomTarget(maxDistance, strictness, target?.name))
     setShotCount((c) => c + 1)
   }
 
@@ -76,23 +77,22 @@ function App() {
               {target.name}
             </h2>
 
-            <div className="target-distance" data-testid="target-distance">
-              <span className="distance-value">{target.distance}</span>
-              <span className="distance-unit">yd</span>
-            </div>
-
-            <div className="target-details">
-              <div className="detail-row">
-                <span className="detail-label">OK縦幅</span>
-                <span className="detail-value" data-testid="target-depth">
-                  ±{target.depthOk}yd
-                </span>
+            <div className="target-zone" data-testid="target-zone">
+              <div className="target-zone-main">
+                <div className="target-zone-box">
+                  <div className="target-distance" data-testid="target-distance">
+                    <span className="distance-value">{target.distance}</span>
+                    <span className="distance-unit">yd</span>
+                  </div>
+                </div>
+                <div className="target-zone-depth" data-testid="target-depth">
+                  <span className="zone-arrow">↕</span>
+                  <span className="zone-value">±{target.depthOk}yd</span>
+                </div>
               </div>
-              <div className="detail-row">
-                <span className="detail-label">OK横幅</span>
-                <span className="detail-value" data-testid="target-width">
-                  ±{target.widthOk / 2}yd
-                </span>
+              <div className="target-zone-width" data-testid="target-width">
+                <span className="zone-arrow">⇔</span>
+                <span className="zone-value">±{target.widthOk / 2}yd</span>
               </div>
             </div>
 
@@ -277,6 +277,29 @@ function App() {
             </div>
             <p className="settings-hint">
               ドライバーの最大飛距離を設定すると、すべてのターゲット距離が調整されます。
+            </p>
+            <div className="settings-row">
+              <label className="settings-label" htmlFor="strictness">
+                シビアさ
+              </label>
+              <select
+                id="strictness"
+                className="settings-select"
+                value={strictness}
+                onChange={(e) => setStrictness(e.target.value as StrictnessLevel)}
+                data-testid="strictness-select"
+              >
+                {(Object.entries(STRICTNESS_LABELS) as [StrictnessLevel, string][]).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
+            <p className="settings-hint">
+              OKゾーンの広さを調整します。「ゆるい」で広く、「とてもシビア」で狭くなります。
             </p>
           </div>
         )}

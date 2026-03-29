@@ -4,6 +4,7 @@ import {
   generateTargetFromTemplate,
   generateRandomTarget,
   generateDepthHint,
+  getTargetCategory,
   computeStats,
 } from '../logic'
 import { targetTemplates } from '../targets'
@@ -394,5 +395,128 @@ describe('computeStats', () => {
     const stats = computeStats(results)
     expect(stats.scenarioStats[0].name).toBe('アプローチ')
     expect(stats.scenarioStats[1].name).toBe('ドライバー')
+  })
+})
+
+describe('getTargetCategory', () => {
+  it('ドライバーをdriver カテゴリと判定する', () => {
+    expect(getTargetCategory('ドライバー ティーショット')).toBe('driver')
+  })
+
+  it('ロングアイアンをlong-iron カテゴリと判定する', () => {
+    expect(getTargetCategory('ロングアイアン Par3 ティーショット')).toBe('long-iron')
+  })
+
+  it('アプローチをapproach カテゴリと判定する', () => {
+    expect(getTargetCategory('アプローチ（ピッチショット）')).toBe('approach')
+    expect(getTargetCategory('アプローチ（チップショット）')).toBe('approach')
+    expect(getTargetCategory('アプローチ（ランニング）')).toBe('approach')
+  })
+
+  it('その他をother カテゴリと判定する', () => {
+    expect(getTargetCategory('セカンドショット（ミドル）')).toBe('other')
+    expect(getTargetCategory('レイアップショット')).toBe('other')
+  })
+})
+
+describe('generateTargetFromTemplate with strictness', () => {
+  const template: TargetTemplate = {
+    name: 'テスト ティーショット',
+    distanceMin: 100,
+    distanceMax: 200,
+    depthOk: 20,
+    widthOk: 20,
+    obLeftChance: 0.5,
+    obRightChance: 0.5,
+    shortSideHintChance: 0,
+    longSideHintChance: 0,
+    weight: 10,
+  }
+
+  it('strictness=normalで元の値が維持される', () => {
+    const target = generateTargetFromTemplate(template, 250, 'normal')
+    expect(target.depthOk).toBe(20)
+    expect(target.widthOk).toBe(20)
+  })
+
+  it('strictness=easyでOKゾーンが広がる', () => {
+    const target = generateTargetFromTemplate(template, 250, 'easy')
+    expect(target.depthOk).toBe(30)  // 20 * 1.5 = 30
+    expect(target.widthOk).toBe(30)
+  })
+
+  it('strictness=strictでOKゾーンが狭まる', () => {
+    const target = generateTargetFromTemplate(template, 250, 'strict')
+    expect(target.depthOk).toBe(15)  // 20 * 0.75 = 15
+    expect(target.widthOk).toBe(15)
+  })
+
+  it('strictness=veryStrictでOKゾーンがさらに狭まる', () => {
+    const target = generateTargetFromTemplate(template, 250, 'veryStrict')
+    expect(target.depthOk).toBe(10)  // 20 * 0.5 = 10
+    expect(target.widthOk).toBe(10)
+  })
+
+  it('OKゾーンが最小1ydを保つ', () => {
+    const smallTemplate: TargetTemplate = {
+      ...template,
+      depthOk: 1,
+      widthOk: 1,
+    }
+    const target = generateTargetFromTemplate(smallTemplate, 250, 'veryStrict')
+    expect(target.depthOk).toBeGreaterThanOrEqual(1)
+    expect(target.widthOk).toBeGreaterThanOrEqual(1)
+  })
+})
+
+describe('generateRandomTarget with consecutive prevention', () => {
+  it('ドライバー連続を防ぐ（統計的テスト）', () => {
+    let consecutiveCount = 0
+    const iterations = 500
+
+    for (let i = 0; i < iterations; i++) {
+      const target = generateRandomTarget(250, 'normal', 'ドライバー ティーショット')
+      if (getTargetCategory(target.name) === 'driver') {
+        consecutiveCount++
+      }
+    }
+
+    // 連続防止が機能していれば、ドライバーはほぼ出ない
+    expect(consecutiveCount / iterations).toBeLessThan(0.05)
+  })
+
+  it('アプローチ連続を防ぐ（統計的テスト）', () => {
+    let consecutiveCount = 0
+    const iterations = 500
+
+    for (let i = 0; i < iterations; i++) {
+      const target = generateRandomTarget(250, 'normal', 'アプローチ（ピッチショット）')
+      if (getTargetCategory(target.name) === 'approach') {
+        consecutiveCount++
+      }
+    }
+
+    expect(consecutiveCount / iterations).toBeLessThan(0.05)
+  })
+
+  it('otherカテゴリは連続防止の対象外', () => {
+    let otherCount = 0
+    const iterations = 500
+
+    for (let i = 0; i < iterations; i++) {
+      const target = generateRandomTarget(250, 'normal', 'セカンドショット（ミドル）')
+      if (getTargetCategory(target.name) === 'other') {
+        otherCount++
+      }
+    }
+
+    // otherカテゴリは連続防止の対象外なので出現する
+    expect(otherCount / iterations).toBeGreaterThan(0.1)
+  })
+
+  it('previousTargetNameが未指定でも正常に動作する', () => {
+    const target = generateRandomTarget(250, 'normal')
+    expect(target).toBeDefined()
+    expect(target.name).toBeTruthy()
   })
 })

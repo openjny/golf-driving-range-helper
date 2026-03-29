@@ -110,6 +110,14 @@ describe('App', () => {
     expect(screen.getByText('yd')).toBeInTheDocument()
   })
 
+  it('ターゲットゾーンが視覚的に表示される', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('next-button'))
+    expect(screen.getByTestId('target-zone')).toBeInTheDocument()
+    expect(screen.getByText('⇔')).toBeInTheDocument()
+    expect(screen.getByText('↕')).toBeInTheDocument()
+  })
+
   it('設定ボタンを押すと設定パネルが表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('settings-button'))
@@ -125,5 +133,25 @@ describe('App', () => {
     const input = screen.getByTestId('max-distance-input') as HTMLInputElement
     fireEvent.change(input, { target: { value: '180' } })
     expect(input.value).toBe('180')
+  })
+
+  it('シビアさの設定が表示される', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('settings-button'))
+
+    expect(screen.getByTestId('strictness-select')).toBeInTheDocument()
+    expect(screen.getByText('ゆるい')).toBeInTheDocument()
+    expect(screen.getByText('ふつう')).toBeInTheDocument()
+    expect(screen.getByText('シビア')).toBeInTheDocument()
+    expect(screen.getByText('とてもシビア')).toBeInTheDocument()
+  })
+
+  it('シビアさの設定を変更できる', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('settings-button'))
+
+    const select = screen.getByTestId('strictness-select') as HTMLSelectElement
+    fireEvent.change(select, { target: { value: 'easy' } })
+    expect(select.value).toBe('easy')
   })
 })
