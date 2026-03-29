@@ -178,7 +178,6 @@ describe('App', () => {
     expect(screen.getByText('ゆるい')).toBeInTheDocument()
     expect(screen.getByText('ふつう')).toBeInTheDocument()
     expect(screen.getByText('シビア')).toBeInTheDocument()
-    expect(screen.getByText('とてもシビア')).toBeInTheDocument()
   })
 
   it('シビアさの設定を変更できる', () => {

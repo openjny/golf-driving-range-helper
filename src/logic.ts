@@ -91,8 +91,8 @@ export function generateTargetFromTemplate(
   return {
     name: template.name,
     distance,
-    depthOk: Math.max(1, Math.round(template.depthOk * strictnessMultiplier)),
-    widthOk: Math.max(1, Math.round(template.widthOk * strictnessMultiplier)),
+    depthOk: Math.max(1, Math.ceil(distance * template.depthRatio * strictnessMultiplier)),
+    widthOk: Math.max(1, Math.ceil(distance * template.widthRatio * strictnessMultiplier)),
   }
 }
 

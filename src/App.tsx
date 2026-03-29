@@ -103,7 +103,7 @@ function App() {
               </div>
               <div className="target-zone-width" data-testid="target-width">
                 <span className="zone-arrow zone-arrow-width">↔</span>
-                <span className="zone-value">±{target.widthOk / 2}yd</span>
+                <span className="zone-value">±{target.widthOk}yd</span>
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@ function App() {
                 </select>
               </div>
               <p className="settings-hint">
-                OKゾーンの広さを調整します。「ゆるい」で広く、「とてもシビア」で狭くなります。
+                OKゾーンの広さを調整します。「ゆるい」で広く、「シビア」で狭くなります。
               </p>
             </div>
 

@@ -65,8 +65,8 @@ describe('generateTargetFromTemplate', () => {
     name: 'テスト ティーショット',
     distanceMin: 100,
     distanceMax: 200,
-    depthOk: 15,
-    widthOk: 20,
+    depthRatio: 0.10,
+    widthRatio: 0.08,
     weight: 10,
   }
 
@@ -75,8 +75,8 @@ describe('generateTargetFromTemplate', () => {
     expect(target.name).toBe('テスト ティーショット')
     expect(target.distance).toBeGreaterThanOrEqual(100)
     expect(target.distance).toBeLessThanOrEqual(200)
-    expect(target.depthOk).toBe(15)
-    expect(target.widthOk).toBe(20)
+    expect(target.depthOk).toBe(Math.ceil(target.distance * 0.10))
+    expect(target.widthOk).toBe(Math.ceil(target.distance * 0.08))
   })
 
   it('距離が10ヤード刻みで生成される', () => {
@@ -205,8 +205,8 @@ describe('generateTargetFromTemplate with maxDistance', () => {
     name: 'テスト ティーショット',
     distanceMin: 200,
     distanceMax: 250,
-    depthOk: 30,
-    widthOk: 30,
+    depthRatio: 0.06,
+    widthRatio: 0.10,
     weight: 10,
   }
 
@@ -331,46 +331,44 @@ describe('getTargetCategory', () => {
 })
 
 describe('generateTargetFromTemplate with strictness', () => {
+  // 固定距離(200yd)でテストしやすくする
   const template: TargetTemplate = {
     name: 'テスト ティーショット',
-    distanceMin: 100,
+    distanceMin: 200,
     distanceMax: 200,
-    depthOk: 20,
-    widthOk: 20,
+    depthRatio: 0.10,
+    widthRatio: 0.10,
     weight: 10,
   }
 
-  it('strictness=normalで元の値が維持される', () => {
+  it('strictness=normalで距離×比率の値になる', () => {
+    // distance=200, depthOk = ceil(200 * 0.10 * 1.0) = 20
     const target = generateTargetFromTemplate(template, 250, 'normal')
     expect(target.depthOk).toBe(20)
     expect(target.widthOk).toBe(20)
   })
 
   it('strictness=easyでOKゾーンが広がる', () => {
+    // distance=200, depthOk = ceil(200 * 0.10 * 1.3) = 26
     const target = generateTargetFromTemplate(template, 250, 'easy')
-    expect(target.depthOk).toBe(30)
-    expect(target.widthOk).toBe(30)
+    expect(target.depthOk).toBe(26)
+    expect(target.widthOk).toBe(26)
   })
 
   it('strictness=strictでOKゾーンが狭まる', () => {
+    // distance=200, depthOk = ceil(200 * 0.10 * 0.7) = 14
     const target = generateTargetFromTemplate(template, 250, 'strict')
-    expect(target.depthOk).toBe(15)
-    expect(target.widthOk).toBe(15)
-  })
-
-  it('strictness=veryStrictでOKゾーンがさらに狭まる', () => {
-    const target = generateTargetFromTemplate(template, 250, 'veryStrict')
-    expect(target.depthOk).toBe(10)
-    expect(target.widthOk).toBe(10)
+    expect(target.depthOk).toBe(14)
+    expect(target.widthOk).toBe(14)
   })
 
   it('OKゾーンが最小1ydを保つ', () => {
     const smallTemplate: TargetTemplate = {
       ...template,
-      depthOk: 1,
-      widthOk: 1,
+      depthRatio: 0.001,
+      widthRatio: 0.001,
     }
-    const target = generateTargetFromTemplate(smallTemplate, 250, 'veryStrict')
+    const target = generateTargetFromTemplate(smallTemplate, 250, 'strict')
     expect(target.depthOk).toBeGreaterThanOrEqual(1)
     expect(target.widthOk).toBeGreaterThanOrEqual(1)
   })

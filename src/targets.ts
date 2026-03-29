@@ -5,49 +5,67 @@ import type { BaseTemplate, DistanceProfile } from './types'
  *
  * 距離帯: 10→30→50→100→150→200→250yd（MECE・隙間なし・重複なし）
  * 各プロフィールの maxDistance に応じて比例スケールされる。
+ *
+ * depthRatio / widthRatio（OKゾーン楕円半径の距離比率）の根拠:
+ *
+ * 出典:
+ *   - practical-golf.com "Driver Dispersion Test"
+ *       スクラッチプレーヤー実測:
+ *       SW ~107yd → 縦幅全幅20yd (±9.3%), 8i 160yd → 縦23yd (±7.2%) / 横24yd (±7.5%),
+ *       5i 195yd → 縦23yd (±5.9%) / 横31yd (±7.9%), Driver ~270yd → 横68yd (±12.6%)
+ *   - golfwrx.com "Pros v Amateurs: 100 & 150 yards" (Trackman実測)
+ *       14HC: 140yd → 縦幅33yd (±11.8%), 160yd → 縦幅24yd (±7.5%)
+ *   - upyourclub.com "7 Iron Distance Chart" (Trackman)
+ *       7i典型的アマ: キャリー散布 9-14yd (±3.2-5%)
+ *   - thebluemountains.ca "Amateur Driving Distance" (Trackman radar)
+ *       アマ多数のドライバー横散布 IQR: -20〜+40yd ≈ ±16%
+ *
+ * 傾向: ウェッジ(短距離)は縦散布が大きく横は小さい、
+ *        ドライバー(長距離)は縦が小さく横が大きい（フェース角増幅）。
+ *        アイアン(中距離)は縦横ともに中程度。
  */
 export const baseTemplates: BaseTemplate[] = [
   {
     name: 'ロングショット',
     distanceMin: 200,
     distanceMax: 250,
-    depthOk: 30,
-    widthOk: 30,
+    depthRatio: 0.06,   // Driver/3W: 縦距離は安定（±5.9% @ 195yd）
+    widthRatio: 0.10,   // フェース角が距離で増幅され横に散る（±12.6% @ 270yd）
   },
   {
     name: 'ミドルショット（長）',
     distanceMin: 150,
     distanceMax: 200,
-    depthOk: 18,
-    widthOk: 20,
+    depthRatio: 0.07,   // ロングアイアン/ハイブリッド（±7.2% @ 160yd）
+    widthRatio: 0.08,   // 中程度の横散布（±7.5-7.9% @ 160-195yd）
   },
   {
     name: 'ミドルショット（短）',
     distanceMin: 100,
     distanceMax: 150,
-    depthOk: 12,
-    widthOk: 15,
+    depthRatio: 0.08,   // ミドルアイアン（±7.5% @ 140yd, 典型的アマ ±3.2-5%）
+    widthRatio: 0.06,   // フルスイングで比較的安定
   },
   {
     name: 'ハーフショット',
     distanceMin: 50,
     distanceMax: 100,
-    depthOk: 8,
-    widthOk: 10,
+    depthRatio: 0.10,   // ウェッジのパーシャルスイング（±9.3% @ 107yd）
+    widthRatio: 0.06,   // 短い分だけ横ブレは小さい
   },
   {
     name: 'アプローチ（ピッチ）',
     distanceMin: 30,
     distanceMax: 50,
-    depthOk: 5,
-    widthOk: 8,
+    depthRatio: 0.12,   // コントロールショット: スピン・打ち出し角のバラつき大
+    widthRatio: 0.07,   // 横は比較的安定
   },
   {
     name: 'アプローチ（チップ&ラン）',
     distanceMin: 10,
     distanceMax: 30,
-    depthOk: 3,
-    widthOk: 5,
+    depthRatio: 0.15,   // 極短距離ではインパクトの微差が縦方向に直結
+    widthRatio: 0.08,   // チップでもフェース向きのブレで左右に散る
   },
 ]
 

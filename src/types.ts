@@ -4,9 +4,9 @@ export interface Target {
   name: string
   /** 狙いの距離（ヤード） */
   distance: number
-  /** OKな縦幅（ヤード） - 前後の許容範囲 */
+  /** OK楕円の縦半径（ヤード） */
   depthOk: number
-  /** OKな横幅（ヤード） - 左右の許容範囲 */
+  /** OK楕円の横半径（ヤード） */
   widthOk: number
 }
 
@@ -18,10 +18,10 @@ export interface BaseTemplate {
   distanceMin: number
   /** 距離の最大値（ヤード） */
   distanceMax: number
-  /** OKな縦幅（ヤード） */
-  depthOk: number
-  /** OKな横幅（ヤード） */
-  widthOk: number
+  /** OK楕円の縦半径比率（距離に対する割合） */
+  depthRatio: number
+  /** OK楕円の横半径比率（距離に対する割合） */
+  widthRatio: number
 }
 
 /** ターゲットテンプレートの定義（距離範囲を持つ） */
@@ -86,14 +86,13 @@ export interface SessionStats {
 export const DEFAULT_PROFILE_ID: DistanceProfileId = 'd210'
 
 /** シビアさのレベル */
-export type StrictnessLevel = 'easy' | 'normal' | 'strict' | 'veryStrict'
+export type StrictnessLevel = 'easy' | 'normal' | 'strict'
 
 /** シビアさレベルごとの倍率 */
 export const STRICTNESS_MULTIPLIERS: Record<StrictnessLevel, number> = {
-  easy: 1.5,
+  easy: 1.3,
   normal: 1.0,
-  strict: 0.75,
-  veryStrict: 0.5,
+  strict: 0.7,
 }
 
 /** シビアさレベルの表示名 */
@@ -101,7 +100,6 @@ export const STRICTNESS_LABELS: Record<StrictnessLevel, string> = {
   easy: 'ゆるい',
   normal: 'ふつう',
   strict: 'シビア',
-  veryStrict: 'とてもシビア',
 }
 
 /** ターゲットカテゴリ（連続防止用） */
