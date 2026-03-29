@@ -35,7 +35,6 @@ function App() {
 
   const handleSkip = () => {
     setTarget(generateRandomTarget(profile, strictness, target?.name))
-    setShotCount((c) => c + 1)
   }
 
   const handleFinish = () => {

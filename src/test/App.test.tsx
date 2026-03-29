@@ -94,7 +94,7 @@ describe('App', () => {
     expect(screen.getByText('1球目')).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('skip-button'))
-    expect(screen.getByText('2球目')).toBeInTheDocument()
+    expect(screen.getByText('1球目')).toBeInTheDocument()
 
     // 成功を1つ記録して終了
     fireEvent.click(screen.getByTestId('ok-button'))
