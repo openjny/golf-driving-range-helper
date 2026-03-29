@@ -312,14 +312,17 @@
 }
 
 .btn-finish {
-  background: var(--gray-light);
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   color: var(--gray-dark);
   font-size: 0.85rem;
-  align-self: flex-end;
+  width: 100%;
+  padding: 12px 24px;
 }
 
 .btn-finish:hover {
-  background: #e0e0e0;
+  background: var(--gray-light);
 }
 
 /* Last shot prompt card */
