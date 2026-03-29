@@ -110,8 +110,14 @@
 .target-name {
   font-size: 1.1rem;
   color: var(--green-dark);
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   font-weight: 600;
+}
+
+.target-basis {
+  font-size: 0.75rem;
+  color: var(--gray-mid);
+  margin-bottom: 8px;
 }
 
 .target-distance {

@@ -87,6 +87,7 @@ function App() {
             <h2 className="target-name" data-testid="target-name">
               {target.name}
             </h2>
+            <p className="target-basis">キャリー基準</p>
 
             <div className="target-zone" data-testid="target-zone">
               <div className="ellipse-far" data-testid="target-depth">
