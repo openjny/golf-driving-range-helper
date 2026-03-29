@@ -408,6 +408,7 @@
 .stats-scenarios {
   border-top: 1px solid var(--gray-light);
   padding-top: 16px;
+  text-align: left;
 }
 
 .stats-scenario-title {
