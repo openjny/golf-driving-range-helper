@@ -308,7 +308,7 @@
 }
 
 .btn-skip:hover {
-  background: var(--gray-light);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .btn-finish {
