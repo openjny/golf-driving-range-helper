@@ -233,6 +233,9 @@
   color: var(--gray-dark);
   flex: 1;
   font-size: 0.95rem;
+  padding-left: 8px;
+  padding-right: 8px;
+  white-space: nowrap;
 }
 
 .btn-skip:hover {
