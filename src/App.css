@@ -222,6 +222,7 @@
   background: var(--green-bg);
   padding: 0 2px;
   line-height: 1;
+  white-space: nowrap;
 }
 
 /* Buttons */
