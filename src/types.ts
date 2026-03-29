@@ -4,26 +4,47 @@ export interface Target {
   name: string
   /** 狙いの距離（ヤード） */
   distance: number
-  /** OKな縦幅（ヤード） - 前後の許容範囲 */
+  /** OK楕円の縦半径（ヤード） */
   depthOk: number
-  /** OKな横幅（ヤード） - 左右の許容範囲 */
+  /** OK楕円の横半径（ヤード） */
   widthOk: number
 }
 
-/** ターゲットテンプレートの定義（距離範囲を持つ） */
-export interface TargetTemplate {
+/** ベーステンプレートの定義（距離範囲のみ、weightなし） */
+export interface BaseTemplate {
   /** ターゲット名 */
   name: string
   /** 距離の最小値（ヤード） */
   distanceMin: number
   /** 距離の最大値（ヤード） */
   distanceMax: number
-  /** OKな縦幅（ヤード） */
-  depthOk: number
-  /** OKな横幅（ヤード） */
-  widthOk: number
+  /** OK楕円の縦半径比率（距離に対する割合） */
+  depthRatio: number
+  /** OK楕円の横半径比率（距離に対する割合） */
+  widthRatio: number
+}
+
+/** ターゲットテンプレートの定義（距離範囲を持つ） */
+export interface TargetTemplate extends BaseTemplate {
   /** 出現重み（全テンプレートの重みの合計に対する比率で出現頻度が決まる） */
   weight: number
+}
+
+/** 飛距離プロフィールID */
+export type DistanceProfileId = 'd150' | 'd180' | 'd210' | 'd240' | 'd270' | 'd300'
+
+/** 飛距離プロフィール定義 */
+export interface DistanceProfile {
+  /** プロフィールID */
+  id: DistanceProfileId
+  /** 表示名 */
+  label: string
+  /** 説明 */
+  description: string
+  /** 最大飛距離（ヤード） */
+  maxDistance: number
+  /** 各テンプレートの出現重み（baseTemplatesと同じ順） */
+  weights: number[]
 }
 
 /** ショットの結果種別 */
@@ -61,27 +82,43 @@ export interface SessionStats {
   scenarioStats: ScenarioStat[]
 }
 
-/** デフォルトの最大飛距離（ヤード） */
-export const DEFAULT_MAX_DISTANCE = 250
+/** デフォルトのプロフィールID */
+export const DEFAULT_PROFILE_ID: DistanceProfileId = 'd210'
 
 /** シビアさのレベル */
-export type StrictnessLevel = 'easy' | 'normal' | 'strict' | 'veryStrict'
+export type StrictnessLevel = 'easy' | 'normal' | 'strict'
 
-/** シビアさレベルごとの倍率 */
-export const STRICTNESS_MULTIPLIERS: Record<StrictnessLevel, number> = {
-  easy: 1.5,
-  normal: 1.0,
-  strict: 0.75,
-  veryStrict: 0.5,
+/** シビアさレベルごとの比率オフセット（ポイント加減算） */
+export const STRICTNESS_OFFSETS: Record<StrictnessLevel, number> = {
+  easy: 0.02,
+  normal: 0,
+  strict: -0.02,
 }
 
 /** シビアさレベルの表示名 */
 export const STRICTNESS_LABELS: Record<StrictnessLevel, string> = {
-  easy: 'ゆるい',
+  easy: 'ゆるめ',
   normal: 'ふつう',
   strict: 'シビア',
-  veryStrict: 'とてもシビア',
+}
+
+/** シビアさレベルの説明 */
+export const STRICTNESS_DESCRIPTIONS: Record<StrictnessLevel, string> = {
+  easy: 'OKゾーン広め',
+  normal: '標準',
+  strict: 'OKゾーン狭め',
 }
 
 /** ターゲットカテゴリ（連続防止用） */
-export type TargetCategory = 'driver' | 'long-iron' | 'approach' | 'other'
+export type TargetCategory = 'long' | 'approach' | 'other'
+
+/** 距離帯情報（プレビュー表示用） */
+export interface DistanceRangeInfo {
+  name: string
+  distanceMin: number
+  distanceMax: number
+  weight: number
+  percentage: number
+  depthRatio: number
+  widthRatio: number
+}

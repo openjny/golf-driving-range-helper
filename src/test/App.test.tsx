@@ -8,9 +8,9 @@ describe('App', () => {
     expect(screen.getByTestId('next-button')).toHaveTextContent('スタート')
   })
 
-  it('ウェルカムメッセージが表示される', () => {
+  it('初期画面にドライバー飛距離ラベルが表示される', () => {
     render(<App />)
-    expect(screen.getByText(/ボタンを押してターゲットを表示しましょう/)).toBeInTheDocument()
+    expect(screen.getByText(/ドライバー飛距離/)).toBeInTheDocument()
   })
 
   it('スタートボタンを押すとターゲットカードが表示される', () => {
@@ -94,7 +94,7 @@ describe('App', () => {
     expect(screen.getByText('1球目')).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('skip-button'))
-    expect(screen.getByText('2球目')).toBeInTheDocument()
+    expect(screen.getByText('1球目')).toBeInTheDocument()
 
     // 成功を1つ記録して終了
     fireEvent.click(screen.getByTestId('ok-button'))
@@ -145,51 +145,71 @@ describe('App', () => {
   it('距離がyd単位で表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
-    expect(screen.getByText('yd')).toBeInTheDocument()
+    expect(screen.getByTestId('target-depth').textContent).toMatch(/yd/)
   })
 
-  it('ターゲットゾーンが視覚的に表示される', () => {
+  it('ターゲットゾーンが楕円で表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     expect(screen.getByTestId('target-zone')).toBeInTheDocument()
-    expect(screen.getByText('↔')).toBeInTheDocument()
-    expect(screen.getByText('↕')).toBeInTheDocument()
+    expect(screen.getByTestId('target-depth')).toBeInTheDocument()
+    expect(screen.getByTestId('target-width')).toBeInTheDocument()
   })
 
-  it('設定ボタンを押すと設定パネルが表示される', () => {
+  it('初期画面に設定パネルが常時表示される', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
     expect(screen.getByTestId('settings-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('max-distance-input')).toBeInTheDocument()
+    expect(screen.getByTestId('profile-select')).toBeInTheDocument()
   })
 
-  it('最大飛距離の設定が変更できる', () => {
+  it('プロフィールを選択できる', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
-    const input = screen.getByTestId('max-distance-input') as HTMLInputElement
-    fireEvent.change(input, { target: { value: '180' } })
-    expect(input.value).toBe('180')
+    const profileBtn = screen.getByTestId('profile-d180')
+    fireEvent.click(profileBtn)
+    expect(profileBtn.classList.contains('profile-card--active')).toBe(true)
   })
 
   it('シビアさの設定が表示される', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
     expect(screen.getByTestId('strictness-select')).toBeInTheDocument()
-    expect(screen.getByText('ゆるい')).toBeInTheDocument()
+    expect(screen.getByText('ゆるめ')).toBeInTheDocument()
     expect(screen.getByText('ふつう')).toBeInTheDocument()
     expect(screen.getByText('シビア')).toBeInTheDocument()
-    expect(screen.getByText('とてもシビア')).toBeInTheDocument()
   })
 
   it('シビアさの設定を変更できる', () => {
     render(<App />)
-    fireEvent.click(screen.getByTestId('settings-button'))
 
-    const select = screen.getByTestId('strictness-select') as HTMLSelectElement
-    fireEvent.change(select, { target: { value: 'easy' } })
-    expect(select.value).toBe('easy')
+    const strictBtn = screen.getByTestId('strictness-easy')
+    fireEvent.click(strictBtn)
+    expect(strictBtn.classList.contains('strictness-card--active')).toBe(true)
+  })
+
+  it('設定画面に距離帯プレビューが表示される', () => {
+    render(<App />)
+
+    expect(screen.getByTestId('distance-preview')).toBeInTheDocument()
+    expect(screen.getByText('ロングショット')).toBeInTheDocument()
+  })
+
+  it('ターゲット表示中にヘルプボタンが表示される', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('next-button'))
+
+    expect(screen.getByTestId('help-button')).toBeInTheDocument()
+  })
+
+  it('ヘルプボタンでモーダルが表示・非表示される', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('next-button'))
+    fireEvent.click(screen.getByTestId('help-button'))
+
+    expect(screen.getByTestId('help-modal')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('help-close-button'))
+    expect(screen.queryByTestId('help-modal')).not.toBeInTheDocument()
   })
 })
