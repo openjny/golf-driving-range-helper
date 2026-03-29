@@ -196,29 +196,21 @@ function App() {
             </div>
 
             <div className="settings-section">
-              <div className="settings-row">
-                <label className="settings-label" htmlFor="strictness">
-                  シビアさ
-                </label>
-                <select
-                  id="strictness"
-                  className="settings-select"
-                  value={strictness}
-                  onChange={(e) => setStrictness(e.target.value as StrictnessLevel)}
-                  data-testid="strictness-select"
-                >
-                  {(Object.entries(STRICTNESS_LABELS) as [StrictnessLevel, string][]).map(
-                    ([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ),
-                  )}
-                </select>
+              <label className="settings-label">シビアさ</label>
+              <div className="strictness-cards" data-testid="strictness-select">
+                {(Object.entries(STRICTNESS_LABELS) as [StrictnessLevel, string][]).map(
+                  ([value, label]) => (
+                    <button
+                      key={value}
+                      className={`strictness-card${value === strictness ? ' strictness-card--active' : ''}`}
+                      onClick={() => setStrictness(value)}
+                      data-testid={`strictness-${value}`}
+                    >
+                      {label}
+                    </button>
+                  ),
+                )}
               </div>
-              <p className="settings-hint">
-                OKゾーンの広さを調整します。「ゆるい」で広く、「シビア」で狭くなります。
-              </p>
             </div>
 
             <div className="settings-distance-preview" data-testid="distance-preview">
@@ -228,6 +220,8 @@ function App() {
                   <tr>
                     <th>ターゲット</th>
                     <th>距離</th>
+                    <th>縦±</th>
+                    <th>横±</th>
                     <th>頻度</th>
                   </tr>
                 </thead>
@@ -236,6 +230,8 @@ function App() {
                     <tr key={range.name}>
                       <td>{range.name}</td>
                       <td>{range.distanceMin}-{range.distanceMax}yd</td>
+                      <td>{Math.round(range.depthRatio * 100)}%</td>
+                      <td>{Math.round(range.widthRatio * 100)}%</td>
                       <td>{range.percentage}%</td>
                     </tr>
                   ))}
@@ -324,6 +320,8 @@ function App() {
                     <tr>
                       <th>ターゲット</th>
                       <th>距離</th>
+                      <th>縦±</th>
+                      <th>横±</th>
                       <th>頻度</th>
                     </tr>
                   </thead>
@@ -332,6 +330,8 @@ function App() {
                       <tr key={range.name}>
                         <td>{range.name}</td>
                         <td>{range.distanceMin}-{range.distanceMax}yd</td>
+                        <td>{Math.round(range.depthRatio * 100)}%</td>
+                        <td>{Math.round(range.widthRatio * 100)}%</td>
                         <td>{range.percentage}%</td>
                       </tr>
                     ))}

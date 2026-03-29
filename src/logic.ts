@@ -69,6 +69,8 @@ export function getDistanceRangeInfo(profile: DistanceProfile): DistanceRangeInf
     distanceMax: Math.max(10, Math.round((t.distanceMax * scale) / 10) * 10),
     weight: profile.weights[i],
     percentage: Math.round((profile.weights[i] / totalWeight) * 100),
+    depthRatio: t.depthRatio,
+    widthRatio: t.widthRatio,
   }))
 }
 

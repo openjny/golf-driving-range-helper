@@ -490,6 +490,38 @@
   color: var(--gray-mid);
 }
 
+/* Strictness cards */
+.strictness-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.strictness-card {
+  padding: 10px 4px;
+  border: 2px solid var(--gray-light);
+  border-radius: 10px;
+  background: var(--white);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gray-dark);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.strictness-card:hover {
+  border-color: var(--green-mid);
+  background: var(--green-bg);
+}
+
+.strictness-card--active {
+  border-color: var(--green-mid);
+  background: var(--green-bg);
+  color: var(--green-dark);
+  box-shadow: 0 0 0 1px var(--green-mid);
+}
+
 /* Footer */
 .app-footer {
   text-align: center;

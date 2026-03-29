@@ -183,9 +183,9 @@ describe('App', () => {
   it('シビアさの設定を変更できる', () => {
     render(<App />)
 
-    const select = screen.getByTestId('strictness-select') as HTMLSelectElement
-    fireEvent.change(select, { target: { value: 'easy' } })
-    expect(select.value).toBe('easy')
+    const strictBtn = screen.getByTestId('strictness-easy')
+    fireEvent.click(strictBtn)
+    expect(strictBtn.classList.contains('strictness-card--active')).toBe(true)
   })
 
   it('設定画面に距離帯プレビューが表示される', () => {

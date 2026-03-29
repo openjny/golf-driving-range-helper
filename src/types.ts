@@ -112,4 +112,6 @@ export interface DistanceRangeInfo {
   distanceMax: number
   weight: number
   percentage: number
+  depthRatio: number
+  widthRatio: number
 }
