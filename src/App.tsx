@@ -105,7 +105,6 @@ function App() {
                   <span className="axis-label">{target.widthOk} yd</span>
                   <div className="target-distance" data-testid="target-distance">
                     <span className="distance-value">{target.distance}</span>
-                    <span className="distance-unit">yd</span>
                   </div>
                   <span className="axis-label">{target.widthOk} yd</span>
                 </div>
