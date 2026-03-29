@@ -24,14 +24,15 @@ describe('App', () => {
     expect(screen.getByTestId('target-width')).toBeInTheDocument()
   })
 
-  it('ターゲット表示後にOK/NGボタンが表示される', () => {
+  it('ターゲット表示後に成功/失敗/スキップボタンが表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     expect(screen.getByTestId('ok-button')).toBeInTheDocument()
     expect(screen.getByTestId('ng-button')).toBeInTheDocument()
+    expect(screen.getByTestId('skip-button')).toBeInTheDocument()
   })
 
-  it('OK/NGボタンで次のターゲットに進める', () => {
+  it('成功/失敗ボタンで次のターゲットに進める', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     expect(screen.getByText('1球目')).toBeInTheDocument()
@@ -53,7 +54,7 @@ describe('App', () => {
     expect(screen.getByText('最後のショットの結果は？')).toBeInTheDocument()
   })
 
-  it('最後のショット確認にOK/NGボタンが表示される', () => {
+  it('最後のショット確認に成功/失敗ボタンが表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     fireEvent.click(screen.getByTestId('ok-button'))
@@ -87,7 +88,24 @@ describe('App', () => {
     expect(screen.getByTestId('stats-scenarios')).toBeInTheDocument()
   })
 
-  it('統計画面に2種別の内訳が表示される', () => {
+  it('スキップボタンで集計せずに次のターゲットに進める', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('next-button'))
+    expect(screen.getByText('1球目')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('skip-button'))
+    expect(screen.getByText('2球目')).toBeInTheDocument()
+
+    // 成功を1つ記録して終了
+    fireEvent.click(screen.getByTestId('ok-button'))
+    fireEvent.click(screen.getByTestId('finish-button'))
+    fireEvent.click(screen.getByTestId('last-skip-button'))
+
+    // スキップはカウントされないので1球中1成功 = 100%
+    expect(screen.getByTestId('stats-success-rate')).toHaveTextContent('100%')
+  })
+
+  it('統計画面で2種別の内訳が表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     fireEvent.click(screen.getByTestId('ok-button'))

@@ -210,7 +210,7 @@
   background: var(--green-mid);
   color: var(--white);
   box-shadow: 0 4px 12px rgba(45, 138, 78, 0.3);
-  flex: 1;
+  flex: 2;
 }
 
 .btn-ok:hover {
@@ -221,11 +221,22 @@
   background: var(--red);
   color: var(--white);
   box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
-  flex: 1;
+  flex: 2;
 }
 
 .btn-ng:hover {
   background: #b71c1c;
+}
+
+.btn-skip {
+  background: var(--gray-light);
+  color: var(--gray-dark);
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.btn-skip:hover {
+  background: #e0e0e0;
 }
 
 .btn-finish {

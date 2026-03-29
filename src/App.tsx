@@ -30,6 +30,11 @@ function App() {
     setShotCount((c) => c + 1)
   }
 
+  const handleSkip = () => {
+    setTarget(generateRandomTarget(maxDistance, strictness, target?.name))
+    setShotCount((c) => c + 1)
+  }
+
   const handleFinish = () => {
     setView('last-shot-prompt')
   }
@@ -107,14 +112,14 @@ function App() {
                 onClick={() => handleLastShotResult('success')}
                 data-testid="last-ok-button"
               >
-                ⭕ OK
+                ⭕ 成功
               </button>
               <button
                 className="btn btn-ng"
                 onClick={() => handleLastShotResult('miss')}
                 data-testid="last-ng-button"
               >
-                ❌ NG
+                ❌ 失敗
               </button>
             </div>
             <button
@@ -202,14 +207,21 @@ function App() {
                   onClick={() => handleShotResult('success')}
                   data-testid="ok-button"
                 >
-                  ⭕ OK
+                  ⭕ 成功
                 </button>
                 <button
                   className="btn btn-ng"
                   onClick={() => handleShotResult('miss')}
                   data-testid="ng-button"
                 >
-                  ❌ NG
+                  ❌ 失敗
+                </button>
+                <button
+                  className="btn btn-skip"
+                  onClick={handleSkip}
+                  data-testid="skip-button"
+                >
+                  スキップ
                 </button>
               </div>
               <button
