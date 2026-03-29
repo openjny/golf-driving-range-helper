@@ -1,5 +1,5 @@
 import type { Target, TargetTemplate, TargetCategory, ShotResult, SessionStats, DistanceRangeInfo, DistanceProfileId, DistanceProfile } from './types'
-import { DEFAULT_PROFILE_ID, STRICTNESS_MULTIPLIERS } from './types'
+import { DEFAULT_PROFILE_ID, STRICTNESS_OFFSETS } from './types'
 import type { StrictnessLevel } from './types'
 import { baseTemplates, distanceProfiles } from './targets'
 
@@ -62,7 +62,7 @@ export function getTargetCategory(name: string): TargetCategory {
  */
 export function getDistanceRangeInfo(profile: DistanceProfile, strictness: StrictnessLevel = 'normal'): DistanceRangeInfo[] {
   const scale = profile.maxDistance / BASE_MAX_DISTANCE
-  const strictnessMultiplier = STRICTNESS_MULTIPLIERS[strictness]
+  const offset = STRICTNESS_OFFSETS[strictness]
   const totalWeight = profile.weights.reduce((sum, w) => sum + w, 0)
   return baseTemplates.map((t, i) => ({
     name: t.name,
@@ -70,8 +70,8 @@ export function getDistanceRangeInfo(profile: DistanceProfile, strictness: Stric
     distanceMax: Math.max(10, Math.round((t.distanceMax * scale) / 10) * 10),
     weight: profile.weights[i],
     percentage: Math.round((profile.weights[i] / totalWeight) * 100),
-    depthRatio: t.depthRatio * strictnessMultiplier,
-    widthRatio: t.widthRatio * strictnessMultiplier,
+    depthRatio: Math.max(0.01, t.depthRatio + offset),
+    widthRatio: Math.max(0.01, t.widthRatio + offset),
   }))
 }
 
@@ -84,7 +84,7 @@ export function generateTargetFromTemplate(
   strictness: StrictnessLevel = 'normal',
 ): Target {
   const scale = maxDistance / BASE_MAX_DISTANCE
-  const strictnessMultiplier = STRICTNESS_MULTIPLIERS[strictness]
+  const offset = STRICTNESS_OFFSETS[strictness]
   // 距離は10ヤード刻みでランダムに生成（スケールを適用）
   const scaledMin = Math.max(10, Math.round((template.distanceMin * scale) / 10) * 10)
   const scaledMax = Math.max(10, Math.round((template.distanceMax * scale) / 10) * 10)
@@ -94,8 +94,8 @@ export function generateTargetFromTemplate(
   return {
     name: template.name,
     distance,
-    depthOk: Math.max(1, Math.ceil(distance * template.depthRatio * strictnessMultiplier)),
-    widthOk: Math.max(1, Math.ceil(distance * template.widthRatio * strictnessMultiplier)),
+    depthOk: Math.max(1, Math.ceil(distance * Math.max(0.01, template.depthRatio + offset))),
+    widthOk: Math.max(1, Math.ceil(distance * Math.max(0.01, template.widthRatio + offset))),
   }
 }
 

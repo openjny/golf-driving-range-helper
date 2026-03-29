@@ -88,11 +88,11 @@ export const DEFAULT_PROFILE_ID: DistanceProfileId = 'd210'
 /** シビアさのレベル */
 export type StrictnessLevel = 'easy' | 'normal' | 'strict'
 
-/** シビアさレベルごとの倍率 */
-export const STRICTNESS_MULTIPLIERS: Record<StrictnessLevel, number> = {
-  easy: 1.3,
-  normal: 1.0,
-  strict: 0.7,
+/** シビアさレベルごとの比率オフセット（ポイント加減算） */
+export const STRICTNESS_OFFSETS: Record<StrictnessLevel, number> = {
+  easy: 0.02,
+  normal: 0,
+  strict: -0.02,
 }
 
 /** シビアさレベルの表示名 */

@@ -342,24 +342,24 @@ describe('generateTargetFromTemplate with strictness', () => {
   }
 
   it('strictness=normalで距離×比率の値になる', () => {
-    // distance=200, depthOk = ceil(200 * 0.10 * 1.0) = 20
+    // distance=200, depthOk = ceil(200 * (0.10 + 0)) = 20
     const target = generateTargetFromTemplate(template, 250, 'normal')
     expect(target.depthOk).toBe(20)
     expect(target.widthOk).toBe(20)
   })
 
   it('strictness=easyでOKゾーンが広がる', () => {
-    // distance=200, depthOk = ceil(200 * 0.10 * 1.3) = 26
+    // distance=200, depthOk = ceil(200 * (0.10 + 0.02)) = 25 (浮動小数点の切り上げ)
     const target = generateTargetFromTemplate(template, 250, 'easy')
-    expect(target.depthOk).toBe(26)
-    expect(target.widthOk).toBe(26)
+    expect(target.depthOk).toBe(25)
+    expect(target.widthOk).toBe(25)
   })
 
   it('strictness=strictでOKゾーンが狭まる', () => {
-    // distance=200, depthOk = ceil(200 * 0.10 * 0.7) = 14
+    // distance=200, depthOk = ceil(200 * (0.10 - 0.02)) = 16
     const target = generateTargetFromTemplate(template, 250, 'strict')
-    expect(target.depthOk).toBe(14)
-    expect(target.widthOk).toBe(14)
+    expect(target.depthOk).toBe(16)
+    expect(target.widthOk).toBe(16)
   })
 
   it('OKゾーンが最小1ydを保つ', () => {
