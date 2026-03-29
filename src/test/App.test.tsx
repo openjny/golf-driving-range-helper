@@ -145,7 +145,7 @@ describe('App', () => {
   it('距離がyd単位で表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
-    expect(screen.getByText('yd')).toBeInTheDocument()
+    expect(screen.getByTestId('target-depth').textContent).toMatch(/yd/)
   })
 
   it('ターゲットゾーンが楕円で表示される', () => {

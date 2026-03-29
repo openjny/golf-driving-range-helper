@@ -7,6 +7,19 @@ import './App.css'
 
 type AppView = 'welcome' | 'target' | 'last-shot-prompt' | 'stats'
 
+const IconOk = ({ color = 'currentColor' }: { color?: string }) => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ verticalAlign: 'middle' }}>
+    <circle cx="9" cy="9" r="7" stroke={color} strokeWidth="2.5" fill="none" />
+  </svg>
+)
+
+const IconNg = ({ color = 'currentColor' }: { color?: string }) => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ verticalAlign: 'middle' }}>
+    <line x1="4" y1="4" x2="14" y2="14" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+    <line x1="14" y1="4" x2="4" y2="14" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+  </svg>
+)
+
 function App() {
   const [view, setView] = useState<AppView>('welcome')
   const [target, setTarget] = useState<Target | null>(null)
@@ -63,7 +76,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>⛳ ターゲット練習</h1>
-        <p className="subtitle">ランダムなターゲット距離とゾーンにキャリーさせよう</p>
+        <p className="subtitle">ランダムなターゲット距離（ゾーン）にキャリーさせよう</p>
       </header>
 
       <main className="app-main">
@@ -128,14 +141,14 @@ function App() {
                 onClick={() => handleLastShotResult('success')}
                 data-testid="last-ok-button"
               >
-                ⭕ 成功
+                <IconOk color="#fff" /> 成功
               </button>
               <button
                 className="btn btn-ng"
                 onClick={() => handleLastShotResult('miss')}
                 data-testid="last-ng-button"
               >
-                ❌ 失敗
+                <IconNg color="#fff" /> 失敗
               </button>
             </div>
             <button
@@ -159,10 +172,10 @@ function App() {
               </div>
               <div className="stats-breakdown" data-testid="stats-breakdown">
                 <span className="stats-breakdown-item stats-breakdown-ok">
-                  ⭕ {stats.totalSuccess}
+                  <IconOk color="var(--green-dark)" /> {stats.totalSuccess}
                 </span>
                 <span className="stats-breakdown-item stats-breakdown-ng">
-                  ❌ {stats.totalMiss}
+                  <IconNg color="#c62828" /> {stats.totalMiss}
                 </span>
               </div>
             </div>
@@ -243,7 +256,7 @@ function App() {
                       <td>{range.distanceMin}-{range.distanceMax}yd</td>
                       <td>{Math.round(range.depthRatio * 100)}%</td>
                       <td>{Math.round(range.widthRatio * 100)}%</td>
-                      <td>{range.distanceMin}-{range.distanceMax} yd</td>
+                      <td>{range.percentage}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -269,14 +282,14 @@ function App() {
                   onClick={() => handleShotResult('success')}
                   data-testid="ok-button"
                 >
-                  ⭕ 成功
+                  <IconOk color="#fff" /> 成功
                 </button>
                 <button
                   className="btn btn-ng"
                   onClick={() => handleShotResult('miss')}
                   data-testid="ng-button"
                 >
-                  ❌ 失敗
+                  <IconNg color="#fff" /> 失敗
                 </button>
                 <button
                   className="btn btn-skip"
