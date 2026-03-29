@@ -381,7 +381,7 @@
 .stats-success-rate {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--green-mid);
+  color: var(--green-dark);
   margin-top: 8px;
 }
 
@@ -398,7 +398,7 @@
 }
 
 .stats-breakdown-ok {
-  color: var(--green-mid);
+  color: var(--green-dark);
 }
 
 .stats-breakdown-ng {
@@ -434,8 +434,19 @@
 .stats-scenario-result {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--green-mid);
   white-space: nowrap;
+}
+
+.stats-scenario-result.result-good {
+  color: var(--green-dark);
+}
+
+.stats-scenario-result.result-ok {
+  color: var(--gray-dark);
+}
+
+.stats-scenario-result.result-poor {
+  color: var(--red);
 }
 
 .stats-scenario-detail {
