@@ -42,3 +42,34 @@ export interface TargetTemplate {
   /** 出現重み（全テンプレートの重みの合計に対する比率で出現頻度が決まる） */
   weight: number
 }
+
+/** ショットの結果記録 */
+export interface ShotResult {
+  /** ターゲット名 */
+  targetName: string
+  /** OKゾーンに打てたかどうか */
+  success: boolean
+}
+
+/** 場面ごとの統計 */
+export interface ScenarioStat {
+  /** ターゲット名 */
+  name: string
+  /** 成功数 */
+  successCount: number
+  /** 合計数 */
+  totalCount: number
+}
+
+/** セッション統計 */
+export interface SessionStats {
+  /** 全体の成功数 */
+  totalSuccess: number
+  /** 全体のショット数 */
+  totalShots: number
+  /** 場面ごとの統計 */
+  scenarioStats: ScenarioStat[]
+}
+
+/** デフォルトの最大飛距離（ヤード） */
+export const DEFAULT_MAX_DISTANCE = 250

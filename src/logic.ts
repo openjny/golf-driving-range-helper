@@ -1,4 +1,5 @@
-import type { DepthHint, Target, TargetTemplate } from './types'
+import type { DepthHint, Target, TargetTemplate, ShotResult, SessionStats } from './types'
+import { DEFAULT_MAX_DISTANCE } from './types'
 import { targetTemplates } from './targets'
 
 /**
@@ -43,9 +44,15 @@ export function generateDepthHint(template: TargetTemplate): DepthHint {
 /**
  * ターゲットテンプレートから具体的なターゲットを生成する
  */
-export function generateTargetFromTemplate(template: TargetTemplate): Target {
-  // 距離は10ヤード刻みでランダムに生成
-  const distanceRaw = randomInt(template.distanceMin, template.distanceMax)
+export function generateTargetFromTemplate(
+  template: TargetTemplate,
+  maxDistance: number = DEFAULT_MAX_DISTANCE,
+): Target {
+  const scale = maxDistance / DEFAULT_MAX_DISTANCE
+  // 距離は10ヤード刻みでランダムに生成（スケールを適用）
+  const scaledMin = Math.max(10, Math.round((template.distanceMin * scale) / 10) * 10)
+  const scaledMax = Math.max(10, Math.round((template.distanceMax * scale) / 10) * 10)
+  const distanceRaw = randomInt(scaledMin, scaledMax)
   const distance = Math.round(distanceRaw / 10) * 10
 
   return {
@@ -62,7 +69,37 @@ export function generateTargetFromTemplate(template: TargetTemplate): Target {
 /**
  * ランダムなターゲットを1つ生成する
  */
-export function generateRandomTarget(): Target {
+export function generateRandomTarget(maxDistance: number = DEFAULT_MAX_DISTANCE): Target {
   const template = selectTemplate()
-  return generateTargetFromTemplate(template)
+  return generateTargetFromTemplate(template, maxDistance)
+}
+
+/**
+ * ショット結果からセッション統計を計算する
+ */
+export function computeStats(results: ShotResult[]): SessionStats {
+  const totalShots = results.length
+  const totalSuccess = results.filter((r) => r.success).length
+
+  const scenarioMap = new Map<string, { successCount: number; totalCount: number }>()
+  for (const result of results) {
+    const existing = scenarioMap.get(result.targetName)
+    if (existing) {
+      existing.totalCount++
+      if (result.success) existing.successCount++
+    } else {
+      scenarioMap.set(result.targetName, {
+        successCount: result.success ? 1 : 0,
+        totalCount: 1,
+      })
+    }
+  }
+
+  const scenarioStats = Array.from(scenarioMap.entries()).map(([name, stat]) => ({
+    name,
+    successCount: stat.successCount,
+    totalCount: stat.totalCount,
+  }))
+
+  return { totalSuccess, totalShots, scenarioStats }
 }

@@ -4,9 +4,10 @@ import {
   generateTargetFromTemplate,
   generateRandomTarget,
   generateDepthHint,
+  computeStats,
 } from '../logic'
 import { targetTemplates } from '../targets'
-import type { TargetTemplate } from '../types'
+import type { TargetTemplate, ShotResult } from '../types'
 
 describe('selectTemplate', () => {
   it('テンプレート配列からテンプレートを1つ返す', () => {
@@ -280,5 +281,118 @@ describe('targetTemplates', () => {
       (t) => t.name.includes('アプローチ') && t.distanceMax <= 30,
     )
     expect(shortApproach).toBeDefined()
+  })
+})
+
+describe('generateTargetFromTemplate with maxDistance', () => {
+  const template: TargetTemplate = {
+    name: 'テスト ティーショット',
+    distanceMin: 200,
+    distanceMax: 250,
+    depthOk: 30,
+    widthOk: 30,
+    obLeftChance: 0.5,
+    obRightChance: 0.5,
+    shortSideHintChance: 0,
+    longSideHintChance: 0,
+    weight: 10,
+  }
+
+  it('maxDistance=250でデフォルトと同じ距離範囲', () => {
+    for (let i = 0; i < 100; i++) {
+      const target = generateTargetFromTemplate(template, 250)
+      expect(target.distance).toBeGreaterThanOrEqual(200)
+      expect(target.distance).toBeLessThanOrEqual(250)
+    }
+  })
+
+  it('maxDistance=180で距離がスケールされる', () => {
+    // 200-250 scaled by 180/250 = 0.72 → 144-180 → rounded to 10s: 140-180
+    for (let i = 0; i < 100; i++) {
+      const target = generateTargetFromTemplate(template, 180)
+      expect(target.distance).toBeGreaterThanOrEqual(140)
+      expect(target.distance).toBeLessThanOrEqual(180)
+      expect(target.distance % 10).toBe(0)
+    }
+  })
+
+  it('maxDistance=100で距離がスケールされる', () => {
+    // 200-250 scaled by 100/250 = 0.4 → 80-100 → rounded to 10s: 80-100
+    for (let i = 0; i < 100; i++) {
+      const target = generateTargetFromTemplate(template, 100)
+      expect(target.distance).toBeGreaterThanOrEqual(80)
+      expect(target.distance).toBeLessThanOrEqual(100)
+      expect(target.distance % 10).toBe(0)
+    }
+  })
+})
+
+describe('generateRandomTarget with maxDistance', () => {
+  it('maxDistance=180で距離が180を超えない', () => {
+    for (let i = 0; i < 500; i++) {
+      const target = generateRandomTarget(180)
+      expect(target.distance).toBeLessThanOrEqual(180)
+    }
+  })
+
+  it('maxDistance=250でデフォルトと同じ振る舞い', () => {
+    for (let i = 0; i < 500; i++) {
+      const target = generateRandomTarget(250)
+      expect(target.distance).toBeLessThanOrEqual(250)
+    }
+  })
+})
+
+describe('computeStats', () => {
+  it('空の結果で正しい統計を返す', () => {
+    const stats = computeStats([])
+    expect(stats.totalShots).toBe(0)
+    expect(stats.totalSuccess).toBe(0)
+    expect(stats.scenarioStats).toHaveLength(0)
+  })
+
+  it('全成功の結果で正しい統計を返す', () => {
+    const results: ShotResult[] = [
+      { targetName: 'ドライバー', success: true },
+      { targetName: 'ドライバー', success: true },
+      { targetName: 'アプローチ', success: true },
+    ]
+    const stats = computeStats(results)
+    expect(stats.totalShots).toBe(3)
+    expect(stats.totalSuccess).toBe(3)
+    expect(stats.scenarioStats).toHaveLength(2)
+  })
+
+  it('混合結果で正しい統計を返す', () => {
+    const results: ShotResult[] = [
+      { targetName: 'ドライバー', success: true },
+      { targetName: 'ドライバー', success: false },
+      { targetName: 'アプローチ', success: true },
+      { targetName: 'アプローチ', success: false },
+      { targetName: 'アプローチ', success: true },
+    ]
+    const stats = computeStats(results)
+    expect(stats.totalShots).toBe(5)
+    expect(stats.totalSuccess).toBe(3)
+
+    const driverStat = stats.scenarioStats.find((s) => s.name === 'ドライバー')
+    expect(driverStat).toBeDefined()
+    expect(driverStat!.successCount).toBe(1)
+    expect(driverStat!.totalCount).toBe(2)
+
+    const approachStat = stats.scenarioStats.find((s) => s.name === 'アプローチ')
+    expect(approachStat).toBeDefined()
+    expect(approachStat!.successCount).toBe(2)
+    expect(approachStat!.totalCount).toBe(3)
+  })
+
+  it('場面ごとの統計が結果の順序を保持する', () => {
+    const results: ShotResult[] = [
+      { targetName: 'アプローチ', success: true },
+      { targetName: 'ドライバー', success: false },
+    ]
+    const stats = computeStats(results)
+    expect(stats.scenarioStats[0].name).toBe('アプローチ')
+    expect(stats.scenarioStats[1].name).toBe('ドライバー')
   })
 })
