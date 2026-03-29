@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel } from './types'
-import { DEFAULT_MAX_DISTANCE, STRICTNESS_LABELS } from './types'
-import { generateRandomTarget, computeStats, getScaledDistanceRanges } from './logic'
+import type { Target, ShotResult, ShotOutcome, SessionStats, StrictnessLevel, DistanceProfileId } from './types'
+import { DEFAULT_PROFILE_ID, STRICTNESS_LABELS } from './types'
+import { distanceProfiles } from './targets'
+import { generateRandomTarget, getProfile, getDistanceRangeInfo, computeStats } from './logic'
 import './App.css'
 
 type AppView = 'welcome' | 'target' | 'last-shot-prompt' | 'stats'
@@ -11,14 +12,16 @@ function App() {
   const [target, setTarget] = useState<Target | null>(null)
   const [shotCount, setShotCount] = useState(0)
   const [shotResults, setShotResults] = useState<ShotResult[]>([])
-  const [maxDistance, setMaxDistance] = useState(DEFAULT_MAX_DISTANCE)
+  const [profileId, setProfileId] = useState<DistanceProfileId>(DEFAULT_PROFILE_ID)
   const [strictness, setStrictness] = useState<StrictnessLevel>('normal')
   const [showSettings, setShowSettings] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [stats, setStats] = useState<SessionStats | null>(null)
 
+  const profile = getProfile(profileId)
+
   const handleStart = () => {
-    setTarget(generateRandomTarget(maxDistance, strictness))
+    setTarget(generateRandomTarget(profile, strictness))
     setShotCount(1)
     setView('target')
   }
@@ -27,12 +30,12 @@ function App() {
     if (target) {
       setShotResults((prev) => [...prev, { targetName: target.name, result }])
     }
-    setTarget(generateRandomTarget(maxDistance, strictness, target?.name))
+    setTarget(generateRandomTarget(profile, strictness, target?.name))
     setShotCount((c) => c + 1)
   }
 
   const handleSkip = () => {
-    setTarget(generateRandomTarget(maxDistance, strictness, target?.name))
+    setTarget(generateRandomTarget(profile, strictness, target?.name))
     setShotCount((c) => c + 1)
   }
 
@@ -56,13 +59,6 @@ function App() {
     setShotResults([])
     setStats(null)
     setView('welcome')
-  }
-
-  const handleMaxDistanceChange = (value: string) => {
-    const num = parseInt(value, 10)
-    if (!isNaN(num) && num >= 50 && num <= 400) {
-      setMaxDistance(Math.round(num / 10) * 10)
-    }
   }
 
   return (
@@ -259,24 +255,23 @@ function App() {
           <div className="settings-panel" data-testid="settings-panel">
             <h3 className="settings-title">⚙️ 設定</h3>
             <div className="settings-row">
-              <label className="settings-label" htmlFor="max-distance">
-                最大飛距離（yd）
+              <label className="settings-label" htmlFor="profile">
+                飛距離プロフィール
               </label>
-              <input
-                id="max-distance"
-                className="settings-input"
-                type="number"
-                min={50}
-                max={400}
-                step={10}
-                value={maxDistance}
-                onChange={(e) => handleMaxDistanceChange(e.target.value)}
-                data-testid="max-distance-input"
-              />
             </div>
-            <p className="settings-hint">
-              ドライバーの最大飛距離を設定すると、すべてのターゲット距離が調整されます。
-            </p>
+            <div className="profile-cards" data-testid="profile-select">
+              {distanceProfiles.map((p) => (
+                <button
+                  key={p.id}
+                  className={`profile-card${p.id === profileId ? ' profile-card--active' : ''}`}
+                  onClick={() => setProfileId(p.id)}
+                  data-testid={`profile-${p.id}`}
+                >
+                  <span className="profile-card-distance">{p.maxDistance}yd</span>
+                  <span className="profile-card-desc">{p.description}</span>
+                </button>
+              ))}
+            </div>
             <div className="settings-row">
               <label className="settings-label" htmlFor="strictness">
                 シビアさ
@@ -312,7 +307,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {getScaledDistanceRanges(maxDistance).map((range) => (
+                  {getDistanceRangeInfo(profile).map((range) => (
                     <tr key={range.name}>
                       <td>{range.name}</td>
                       <td>{range.distanceMin}-{range.distanceMax}yd</td>
@@ -341,7 +336,7 @@ function App() {
               </div>
               <div className="modal-body">
                 <div className="modal-settings-info">
-                  <span>最大飛距離: <strong>{maxDistance}yd</strong></span>
+                  <span>プロフィール: <strong>{profile.maxDistance}yd ({profile.description})</strong></span>
                   <span>シビアさ: <strong>{STRICTNESS_LABELS[strictness]}</strong></span>
                 </div>
                 <table className="distance-table">
@@ -353,7 +348,7 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {getScaledDistanceRanges(maxDistance).map((range) => (
+                    {getDistanceRangeInfo(profile).map((range) => (
                       <tr key={range.name}>
                         <td>{range.name}</td>
                         <td>{range.distanceMin}-{range.distanceMax}yd</td>

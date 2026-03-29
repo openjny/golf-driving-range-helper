@@ -161,16 +161,16 @@ describe('App', () => {
     fireEvent.click(screen.getByTestId('settings-button'))
 
     expect(screen.getByTestId('settings-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('max-distance-input')).toBeInTheDocument()
+    expect(screen.getByTestId('profile-select')).toBeInTheDocument()
   })
 
-  it('最大飛距離の設定が変更できる', () => {
+  it('プロフィールを選択できる', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('settings-button'))
 
-    const input = screen.getByTestId('max-distance-input') as HTMLInputElement
-    fireEvent.change(input, { target: { value: '180' } })
-    expect(input.value).toBe('180')
+    const profileBtn = screen.getByTestId('profile-d180')
+    fireEvent.click(profileBtn)
+    expect(profileBtn.classList.contains('profile-card--active')).toBe(true)
   })
 
   it('シビアさの設定が表示される', () => {

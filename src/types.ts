@@ -10,8 +10,8 @@ export interface Target {
   widthOk: number
 }
 
-/** ターゲットテンプレートの定義（距離範囲を持つ） */
-export interface TargetTemplate {
+/** ベーステンプレートの定義（距離範囲のみ、weightなし） */
+export interface BaseTemplate {
   /** ターゲット名 */
   name: string
   /** 距離の最小値（ヤード） */
@@ -22,8 +22,29 @@ export interface TargetTemplate {
   depthOk: number
   /** OKな横幅（ヤード） */
   widthOk: number
+}
+
+/** ターゲットテンプレートの定義（距離範囲を持つ） */
+export interface TargetTemplate extends BaseTemplate {
   /** 出現重み（全テンプレートの重みの合計に対する比率で出現頻度が決まる） */
   weight: number
+}
+
+/** 飛距離プロフィールID */
+export type DistanceProfileId = 'd150' | 'd180' | 'd210' | 'd240' | 'd270' | 'd300'
+
+/** 飛距離プロフィール定義 */
+export interface DistanceProfile {
+  /** プロフィールID */
+  id: DistanceProfileId
+  /** 表示名 */
+  label: string
+  /** 説明 */
+  description: string
+  /** 最大飛距離（ヤード） */
+  maxDistance: number
+  /** 各テンプレートの出現重み（baseTemplatesと同じ順） */
+  weights: number[]
 }
 
 /** ショットの結果種別 */
@@ -61,8 +82,8 @@ export interface SessionStats {
   scenarioStats: ScenarioStat[]
 }
 
-/** デフォルトの最大飛距離（ヤード） */
-export const DEFAULT_MAX_DISTANCE = 250
+/** デフォルトのプロフィールID */
+export const DEFAULT_PROFILE_ID: DistanceProfileId = 'd210'
 
 /** シビアさのレベル */
 export type StrictnessLevel = 'easy' | 'normal' | 'strict' | 'veryStrict'
@@ -86,8 +107,8 @@ export const STRICTNESS_LABELS: Record<StrictnessLevel, string> = {
 /** ターゲットカテゴリ（連続防止用） */
 export type TargetCategory = 'long' | 'approach' | 'other'
 
-/** スケール後の距離帯情報 */
-export interface ScaledDistanceRange {
+/** 距離帯情報（プレビュー表示用） */
+export interface DistanceRangeInfo {
   name: string
   distanceMin: number
   distanceMax: number
