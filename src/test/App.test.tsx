@@ -22,18 +22,16 @@ describe('App', () => {
     expect(screen.getByTestId('target-distance')).toBeInTheDocument()
     expect(screen.getByTestId('target-depth')).toBeInTheDocument()
     expect(screen.getByTestId('target-width')).toBeInTheDocument()
-    expect(screen.getByTestId('hazard-indicators')).toBeInTheDocument()
   })
 
-  it('ターゲット表示後にOK/NG/ハザードボタンが表示される', () => {
+  it('ターゲット表示後にOK/NGボタンが表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     expect(screen.getByTestId('ok-button')).toBeInTheDocument()
     expect(screen.getByTestId('ng-button')).toBeInTheDocument()
-    expect(screen.getByTestId('hazard-button')).toBeInTheDocument()
   })
 
-  it('OK/NG/ハザードボタンで次のターゲットに進める', () => {
+  it('OK/NGボタンで次のターゲットに進める', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     expect(screen.getByText('1球目')).toBeInTheDocument()
@@ -43,9 +41,6 @@ describe('App', () => {
 
     fireEvent.click(screen.getByTestId('ng-button'))
     expect(screen.getByText('3球目')).toBeInTheDocument()
-
-    fireEvent.click(screen.getByTestId('hazard-button'))
-    expect(screen.getByText('4球目')).toBeInTheDocument()
   })
 
   it('終わるボタンで最後のショット確認が表示される', () => {
@@ -58,7 +53,7 @@ describe('App', () => {
     expect(screen.getByText('最後のショットの結果は？')).toBeInTheDocument()
   })
 
-  it('最後のショット確認にハザードボタンが表示される', () => {
+  it('最後のショット確認にOK/NGボタンが表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     fireEvent.click(screen.getByTestId('ok-button'))
@@ -66,7 +61,6 @@ describe('App', () => {
 
     expect(screen.getByTestId('last-ok-button')).toBeInTheDocument()
     expect(screen.getByTestId('last-ng-button')).toBeInTheDocument()
-    expect(screen.getByTestId('last-hazard-button')).toBeInTheDocument()
   })
 
   it('最後のショットでOKを選ぶと統計が表示される', () => {
@@ -93,13 +87,13 @@ describe('App', () => {
     expect(screen.getByTestId('stats-scenarios')).toBeInTheDocument()
   })
 
-  it('統計画面に3種別の内訳が表示される', () => {
+  it('統計画面に2種別の内訳が表示される', () => {
     render(<App />)
     fireEvent.click(screen.getByTestId('next-button'))
     fireEvent.click(screen.getByTestId('ok-button'))
     fireEvent.click(screen.getByTestId('ng-button'))
     fireEvent.click(screen.getByTestId('finish-button'))
-    fireEvent.click(screen.getByTestId('last-hazard-button'))
+    fireEvent.click(screen.getByTestId('last-ng-button'))
 
     expect(screen.getByTestId('stats-breakdown')).toBeInTheDocument()
   })

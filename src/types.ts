@@ -1,9 +1,6 @@
 /** 前後の攻め方ヒント */
 export type DepthHint = 'short' | 'long' | null
 
-/** ハザードの方向 */
-export type HazardDirection = 'left' | 'right' | 'long' | 'short'
-
 /** ターゲットの定義 */
 export interface Target {
   /** ターゲット名（例：ドライバー ティーショット） */
@@ -14,8 +11,6 @@ export interface Target {
   depthOk: number
   /** OKな横幅（ヤード） - 左右の許容範囲 */
   widthOk: number
-  /** ハザードの方向一覧（最大2つ） */
-  hazards: HazardDirection[]
   /** 前後の攻め方ヒント（アイアン・アプローチ向け） */
   depthHint: DepthHint
 }
@@ -32,14 +27,6 @@ export interface TargetTemplate {
   depthOk: number
   /** OKな横幅（ヤード） */
   widthOk: number
-  /** 左ハザードの発生確率 (0-1) */
-  hazardLeftChance: number
-  /** 右ハザードの発生確率 (0-1) */
-  hazardRightChance: number
-  /** 奥ハザードの発生確率 (0-1) */
-  hazardLongChance: number
-  /** 手前ハザードの発生確率 (0-1) */
-  hazardShortChance: number
   /** 「手前から攻める」ヒントの発生確率 (0-1) */
   shortSideHintChance: number
   /** 「奥でもOK」ヒントの発生確率 (0-1) */
@@ -49,7 +36,7 @@ export interface TargetTemplate {
 }
 
 /** ショットの結果種別 */
-export type ShotOutcome = 'success' | 'miss' | 'hazard'
+export type ShotOutcome = 'success' | 'miss'
 
 /** ショットの結果記録 */
 export interface ShotResult {
@@ -67,8 +54,6 @@ export interface ScenarioStat {
   successCount: number
   /** ミス数（ゾーン外） */
   missCount: number
-  /** ハザード数 */
-  hazardCount: number
   /** 合計数 */
   totalCount: number
 }
@@ -79,8 +64,6 @@ export interface SessionStats {
   totalSuccess: number
   /** 全体のミス数 */
   totalMiss: number
-  /** 全体のハザード数 */
-  totalHazard: number
   /** 全体のショット数 */
   totalShots: number
   /** 場面ごとの統計 */
