@@ -226,7 +226,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {getDistanceRangeInfo(profile).map((range) => (
+                  {getDistanceRangeInfo(profile, strictness).map((range) => (
                     <tr key={range.name}>
                       <td>{range.name}</td>
                       <td>{range.distanceMin}-{range.distanceMax}yd</td>
@@ -326,7 +326,7 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {getDistanceRangeInfo(profile).map((range) => (
+                    {getDistanceRangeInfo(profile, strictness).map((range) => (
                       <tr key={range.name}>
                         <td>{range.name}</td>
                         <td>{range.distanceMin}-{range.distanceMax}yd</td>

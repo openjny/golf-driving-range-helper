@@ -60,8 +60,9 @@ export function getTargetCategory(name: string): TargetCategory {
 /**
  * プロフィールの距離帯情報を計算する（プレビュー表示用）
  */
-export function getDistanceRangeInfo(profile: DistanceProfile): DistanceRangeInfo[] {
+export function getDistanceRangeInfo(profile: DistanceProfile, strictness: StrictnessLevel = 'normal'): DistanceRangeInfo[] {
   const scale = profile.maxDistance / BASE_MAX_DISTANCE
+  const strictnessMultiplier = STRICTNESS_MULTIPLIERS[strictness]
   const totalWeight = profile.weights.reduce((sum, w) => sum + w, 0)
   return baseTemplates.map((t, i) => ({
     name: t.name,
@@ -69,8 +70,8 @@ export function getDistanceRangeInfo(profile: DistanceProfile): DistanceRangeInf
     distanceMax: Math.max(10, Math.round((t.distanceMax * scale) / 10) * 10),
     weight: profile.weights[i],
     percentage: Math.round((profile.weights[i] / totalWeight) * 100),
-    depthRatio: t.depthRatio,
-    widthRatio: t.widthRatio,
+    depthRatio: t.depthRatio * strictnessMultiplier,
+    widthRatio: t.widthRatio * strictnessMultiplier,
   }))
 }
 
